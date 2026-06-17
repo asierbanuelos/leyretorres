@@ -49,17 +49,43 @@ function leyre_registrar_endpoints() {
 // ── GET /dashboard ────────────────────────────────────────────────────────────
 
 function leyre_endpoint_dashboard() {
-    $user_id  = get_current_user_id();
-    $user     = get_userdata( $user_id );
-    $proxima  = leyre_get_proxima_sesion_calendly( $user->user_email );
+    $user_id = get_current_user_id();
+    $user    = get_userdata( $user_id );
+
+    // Próxima sesión: la más próxima en el futuro que no esté completada
+    $ahora   = current_time( 'Y-m-d\TH:i' );
+    $proximas = get_posts([
+        'post_type'   => 'leyre_sesion_tipo',
+        'numberposts' => 1,
+        'post_status' => 'publish',
+        'orderby'     => 'meta_value',
+        'meta_key'    => '_leyre_fecha_sesion',
+        'order'       => 'ASC',
+        'meta_query'  => [
+            'relation' => 'AND',
+            [ 'key' => '_leyre_fecha_sesion', 'value' => $ahora, 'compare' => '>=', 'type' => 'CHAR' ],
+            [ 'key' => '_leyre_estado', 'value' => 'completada', 'compare' => '!=' ],
+        ],
+    ]);
+
+    $proxima = null;
+    if ( ! empty( $proximas ) ) {
+        $s       = $proximas[0];
+        $proxima = [
+            'nombre'         => $s->post_title,
+            'fecha'          => get_post_meta( $s->ID, '_leyre_fecha_sesion',   true ),
+            'enlace_reunion' => get_post_meta( $s->ID, '_leyre_enlace_reunion', true ),
+            'tipo_sesion'    => get_post_meta( $s->ID, '_leyre_tipo_sesion',    true ) ?: '1a1',
+        ];
+    }
 
     return rest_ensure_response([
-        'nombre'           => $user->display_name,
-        'dia_programa'     => leyre_get_dia_programa( $user_id ),
-        'duracion_total'   => (int) get_option( 'leyre_duracion_programa', 90 ),
-        'fecha_fin'        => get_user_meta( $user_id, 'leyre_fecha_fin', true ),
-        'progreso_global'  => leyre_get_progreso_global( $user_id ),
-        'proxima_sesion'   => $proxima ? leyre_formatear_sesion( $proxima ) : null,
+        'nombre'          => $user->display_name,
+        'dia_programa'    => leyre_get_dia_programa( $user_id ),
+        'duracion_total'  => (int) get_option( 'leyre_duracion_programa', 90 ),
+        'fecha_fin'       => get_user_meta( $user_id, 'leyre_fecha_fin', true ),
+        'progreso_global' => leyre_get_progreso_global( $user_id ),
+        'proxima_sesion'  => $proxima,
     ]);
 }
 
@@ -142,25 +168,25 @@ function leyre_endpoint_completar_leccion( WP_REST_Request $request ) {
 // ── GET /sesiones ─────────────────────────────────────────────────────────────
 
 function leyre_endpoint_sesiones() {
-    $user    = get_userdata( get_current_user_id() );
-    $cal     = leyre_get_sesiones_calendly( $user->user_email );
-
-    $tipos_1a1 = get_posts([
+    $sesiones = get_posts([
         'post_type'   => 'leyre_sesion_tipo',
         'numberposts' => -1,
+        'post_status' => 'publish',
         'orderby'     => 'meta_value_num',
         'meta_key'    => '_leyre_numero_sesion',
         'order'       => 'ASC',
     ]);
 
     return rest_ensure_response([
-        'sesiones_calendly' => array_map( 'leyre_formatear_sesion', $cal ),
-        'tipos_1a1'         => array_map( fn( $t ) => [
-            'id'             => $t->ID,
-            'nombre'         => $t->post_title,
-            'numero'         => (int) get_post_meta( $t->ID, '_leyre_numero_sesion', true ),
-            'calendly_link'  => get_post_meta( $t->ID, '_leyre_calendly_link', true ),
-        ], $tipos_1a1 ),
+        'sesiones' => array_map( fn( $s ) => [
+            'id'             => $s->ID,
+            'nombre'         => $s->post_title,
+            'numero'         => (int) get_post_meta( $s->ID, '_leyre_numero_sesion',  true ),
+            'tipo_sesion'    => get_post_meta( $s->ID, '_leyre_tipo_sesion',    true ) ?: '1a1',
+            'estado'         => get_post_meta( $s->ID, '_leyre_estado',         true ) ?: 'pendiente',
+            'fecha'          => get_post_meta( $s->ID, '_leyre_fecha_sesion',   true ),
+            'enlace_reunion' => get_post_meta( $s->ID, '_leyre_enlace_reunion', true ),
+        ], $sesiones ),
     ]);
 }
 

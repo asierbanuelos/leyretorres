@@ -169,22 +169,23 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
             </div>`;
             return;
         }
-        const fecha = new Date(sesion.inicio).toLocaleString('es-ES', {
+        const fecha = new Date(sesion.fecha).toLocaleString('es-ES', {
             weekday: 'long', day: 'numeric', month: 'long',
             hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid'
         });
+        const tipoLabel = sesion.tipo_sesion === 'grupal' ? 'Mentoría grupal' : '1:1 con Leyre';
         el.innerHTML = `<div class="leyre-card-sesion">
             <div class="leyre-card-sesion__icono-wrap">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
             </div>
             <div class="leyre-card-sesion__info">
-                <p class="leyre-card-sesion__tipo">Próxima sesión · 1:1 con Leyre</p>
-                <p class="leyre-card-sesion__titulo">${sesion.nombre || 'Sesión individual'}</p>
+                <p class="leyre-card-sesion__tipo">Próxima sesión · ${tipoLabel}</p>
+                <p class="leyre-card-sesion__titulo">${sesion.nombre || 'Sesión'}</p>
                 <p class="leyre-card-sesion__fecha">${fecha} (CET)</p>
             </div>
-            ${sesion.zoom_link
-                ? `<a href="${sesion.zoom_link}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--pill">Unirme por Zoom</a>`
-                : `<span class="leyre-btn leyre-btn--pill leyre-btn--disabled">Link próximamente</span>`
+            ${sesion.enlace_reunion
+                ? `<a href="${sesion.enlace_reunion}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--pill">Unirse a la sesión</a>`
+                : `<span class="leyre-btn leyre-btn--pill leyre-btn--disabled">Enlace próximamente</span>`
             }
         </div>`;
     }

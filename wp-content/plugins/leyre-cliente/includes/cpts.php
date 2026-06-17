@@ -59,14 +59,14 @@ function leyre_registrar_cpts() {
         'rewrite'      => false,
     ]);
 
-    // ── CPT: Tipo de sesión 1:1 ───────────────────────────────────────────────
+    // ── CPT: Sesión ───────────────────────────────────────────────────────────
     register_post_type( 'leyre_sesion_tipo', [
         'labels'       => [
-            'name'               => 'Tipos de sesión',
-            'singular_name'      => 'Tipo de sesión',
-            'add_new_item'       => 'Añadir tipo de sesión',
-            'edit_item'          => 'Editar tipo de sesión',
-            'menu_name'          => 'Sesiones 1:1',
+            'name'               => 'Sesiones',
+            'singular_name'      => 'Sesión',
+            'add_new_item'       => 'Añadir sesión',
+            'edit_item'          => 'Editar sesión',
+            'menu_name'          => 'Sesiones',
         ],
         'public'       => false,
         'show_ui'      => true,
@@ -85,7 +85,7 @@ function leyre_add_meta_boxes() {
     add_meta_box( 'leyre_modulo_meta',     'Detalles del módulo',       'leyre_mb_modulo',     'leyre_modulo',     'normal', 'high' );
     add_meta_box( 'leyre_leccion_meta',    'Detalles de la lección',    'leyre_mb_leccion',    'leyre_leccion',    'normal', 'high' );
     add_meta_box( 'leyre_recurso_meta',    'Detalles del recurso',      'leyre_mb_recurso',    'leyre_recurso',    'normal', 'high' );
-    add_meta_box( 'leyre_sesion_tipo_meta','Detalles del tipo de sesión','leyre_mb_sesion_tipo','leyre_sesion_tipo','normal', 'high' );
+    add_meta_box( 'leyre_sesion_tipo_meta','Detalles de la sesión','leyre_mb_sesion_tipo','leyre_sesion_tipo','normal', 'high' );
 }
 
 // ── Metabox: Módulo ──────────────────────────────────────────────────────────
@@ -267,21 +267,58 @@ function leyre_mb_recurso( $post ) {
     <?php
 }
 
-// ── Metabox: Tipo de sesión 1:1 ──────────────────────────────────────────────
+// ── Metabox: Sesión ───────────────────────────────────────────────────────────
 
 function leyre_mb_sesion_tipo( $post ) {
     wp_nonce_field( 'leyre_sesion_tipo_save', 'leyre_sesion_tipo_nonce' );
-    $numero          = get_post_meta( $post->ID, '_leyre_numero_sesion',    true );
-    $calendly_link   = get_post_meta( $post->ID, '_leyre_calendly_link',    true );
+    $numero       = get_post_meta( $post->ID, '_leyre_numero_sesion',   true );
+    $tipo_sesion  = get_post_meta( $post->ID, '_leyre_tipo_sesion',     true ) ?: '1a1';
+    $estado       = get_post_meta( $post->ID, '_leyre_estado',          true ) ?: 'pendiente';
+    $fecha        = get_post_meta( $post->ID, '_leyre_fecha_sesion',    true );
+    $enlace       = get_post_meta( $post->ID, '_leyre_enlace_reunion',  true );
     ?>
-    <p>
-        <label><strong>Número de sesión</strong> (1–6)</label><br>
-        <input type="number" name="leyre_numero_sesion" value="<?php echo esc_attr( $numero ); ?>" min="1" max="6" style="width:80px">
-    </p>
-    <p>
-        <label><strong>Link de Calendly para agendar</strong></label><br>
-        <input type="url" name="leyre_calendly_link" value="<?php echo esc_attr( $calendly_link ); ?>" placeholder="https://calendly.com/leyre/sesion-1" style="width:100%">
-    </p>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th><label><strong>Número</strong></label></th>
+            <td>
+                <input type="number" name="leyre_numero_sesion" value="<?php echo esc_attr( $numero ); ?>" min="1" max="20" style="width:70px">
+                <span class="description">Para ordenar la lista (1, 2, 3…)</span>
+            </td>
+        </tr>
+        <tr>
+            <th><label><strong>Tipo</strong></label></th>
+            <td>
+                <select name="leyre_tipo_sesion">
+                    <option value="1a1"    <?php selected( $tipo_sesion, '1a1' );    ?>>Individual 1:1</option>
+                    <option value="grupal" <?php selected( $tipo_sesion, 'grupal' ); ?>>Grupal / Mentoría</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><label><strong>Estado</strong></label></th>
+            <td>
+                <select name="leyre_estado">
+                    <option value="pendiente"  <?php selected( $estado, 'pendiente' );  ?>>Pendiente (por agendar)</option>
+                    <option value="programada" <?php selected( $estado, 'programada' ); ?>>Programada</option>
+                    <option value="completada" <?php selected( $estado, 'completada' ); ?>>Completada</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><label><strong>Fecha y hora</strong></label></th>
+            <td>
+                <input type="datetime-local" name="leyre_fecha_sesion" value="<?php echo esc_attr( $fecha ); ?>">
+                <p class="description">Cuando se programe la sesión, introduce la fecha para que la alumna la vea.</p>
+            </td>
+        </tr>
+        <tr>
+            <th><label><strong>Enlace de la reunión</strong></label></th>
+            <td>
+                <input type="url" name="leyre_enlace_reunion" value="<?php echo esc_attr( $enlace ); ?>" placeholder="https://meet.google.com/xxx-xxxx-xxx" style="width:100%">
+                <p class="description">Google Meet, Zoom, Teams… Crea la reunión y pega aquí el enlace.</p>
+            </td>
+        </tr>
+    </table>
     <?php
 }
 
@@ -331,6 +368,9 @@ function leyre_guardar_meta_sesion_tipo( $post_id ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
     if ( get_post_type( $post_id ) !== 'leyre_sesion_tipo' ) return;
 
-    update_post_meta( $post_id, '_leyre_numero_sesion',  absint( $_POST['leyre_numero_sesion']          ?? 0 ) );
-    update_post_meta( $post_id, '_leyre_calendly_link',  esc_url_raw( $_POST['leyre_calendly_link']    ?? '' ) );
+    update_post_meta( $post_id, '_leyre_numero_sesion',  absint( $_POST['leyre_numero_sesion'] ?? 0 ) );
+    update_post_meta( $post_id, '_leyre_tipo_sesion',    sanitize_text_field( $_POST['leyre_tipo_sesion'] ?? '1a1' ) );
+    update_post_meta( $post_id, '_leyre_estado',         sanitize_text_field( $_POST['leyre_estado'] ?? 'pendiente' ) );
+    update_post_meta( $post_id, '_leyre_fecha_sesion',   sanitize_text_field( $_POST['leyre_fecha_sesion'] ?? '' ) );
+    update_post_meta( $post_id, '_leyre_enlace_reunion', esc_url_raw( $_POST['leyre_enlace_reunion'] ?? '' ) );
 }

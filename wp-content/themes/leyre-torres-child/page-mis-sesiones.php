@@ -90,47 +90,23 @@ $user_id = get_current_user_id();
         }) + ' (CET)';
     }
 
-    function esPasada(iso) {
-        return iso && new Date(iso) < new Date();
-    }
-
     leyreAPI.get('sesiones').then(function (data) {
-        const tipos    = data.tipos_1a1         || [];
-        const eventos  = data.sesiones_calendly || [];
+        const sesiones       = data.sesiones || [];
+        const sesiones1a1    = sesiones.filter(s => s.tipo_sesion !== 'grupal');
+        const sesionesGrupal = sesiones.filter(s => s.tipo_sesion === 'grupal');
 
-        // Ahora: separar eventos en 1:1 y grupales.
-        // Heurística: si el nombre del evento coincide (case-insensitive) con algún tipo 1:1 → es 1:1.
-        const tiposNombres = tipos.map(t => (t.nombre || '').toLowerCase());
-
-        const eventos1a1 = {};   // clave: nombre normalizado del tipo → evento Calendly
-        const eventosGrupales = [];
-
-        eventos.forEach(function (e) {
-            const nombreEvento = (e.nombre || '').toLowerCase();
-            const tipoIdx = tiposNombres.findIndex(tn => nombreEvento.includes(tn) || (tn && tn.includes(nombreEvento)));
-            if (tipoIdx >= 0) {
-                // Guardar la sesión más reciente (futura primero, luego pasada)
-                const key = tiposNombres[tipoIdx];
-                if (!eventos1a1[key] || (!esPasada(e.inicio) && esPasada(eventos1a1[key].inicio))) {
-                    eventos1a1[key] = e;
-                }
-            } else {
-                eventosGrupales.push(e);
-            }
-        });
-
-        renderProxima(eventos);
-        render1a1(tipos, eventos1a1);
-        renderGrupales(eventosGrupales);
+        renderProxima(sesiones);
+        render1a1(sesiones1a1);
+        renderGrupales(sesionesGrupal);
     }).catch(function () {
         document.getElementById('leyre-proxima-wrap').innerHTML =
-            '<p style="color:var(--leyre-muted)">No se pudieron cargar las sesiones.</p>';
+            '<p style="color:var(--c-muted,#8A8080)">No se pudieron cargar las sesiones.</p>';
     });
 
     // ── Próxima sesión ─────────────────────────────────────────────────────
-    function renderProxima(eventos) {
+    function renderProxima(sesiones) {
         const ahora   = new Date();
-        const proxima = eventos.find(e => new Date(e.inicio) > ahora);
+        const proxima = sesiones.find(s => s.fecha && new Date(s.fecha) > ahora && s.estado !== 'completada');
         const wrap    = document.getElementById('leyre-proxima-wrap');
 
         if (!proxima) {
@@ -141,52 +117,50 @@ $user_id = get_current_user_id();
             return;
         }
 
+        const tipoLabel = proxima.tipo_sesion === 'grupal' ? 'Mentoría grupal' : '1:1 con Leyre';
         wrap.innerHTML = `<div class="leyre-card-sesion">
-            <p class="leyre-card-sesion__tipo">Próxima sesión</p>
+            <p class="leyre-card-sesion__tipo">Próxima sesión · ${tipoLabel}</p>
             <p class="leyre-card-sesion__titulo">${proxima.nombre || 'Sesión'}</p>
-            <p class="leyre-card-sesion__fecha">${formatFecha(proxima.inicio)}</p>
-            ${proxima.zoom_link
-                ? `<a href="${proxima.zoom_link}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--beige">Unirme por Zoom</a>`
-                : `<span class="leyre-btn leyre-btn--beige leyre-btn--disabled">Link próximamente</span>`
+            <p class="leyre-card-sesion__fecha">${formatFecha(proxima.fecha)}</p>
+            ${proxima.enlace_reunion
+                ? `<a href="${proxima.enlace_reunion}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--beige">Unirse a la sesión</a>`
+                : `<span class="leyre-btn leyre-btn--beige leyre-btn--disabled">Enlace próximamente</span>`
             }
         </div>`;
     }
 
     // ── Sesiones 1:1 ──────────────────────────────────────────────────────
-    function render1a1(tipos, matchedEventos) {
+    function render1a1(sesiones) {
         const lista = document.getElementById('leyre-lista-1a1');
 
-        if (!tipos.length) {
-            lista.innerHTML = '<li class="leyre-sesion-item" style="color:var(--leyre-muted)">Las sesiones se publicarán pronto.</li>';
+        if (!sesiones.length) {
+            lista.innerHTML = '<li class="leyre-sesion-item" style="color:var(--c-muted,#8A8080)">Las sesiones se publicarán pronto.</li>';
             return;
         }
 
-        lista.innerHTML = tipos.map(function (tipo) {
-            const evento   = matchedEventos[(tipo.nombre || '').toLowerCase()];
-            const pasada   = evento && esPasada(evento.inicio);
-            const futura   = evento && !pasada;
+        const ahora = new Date();
+        lista.innerHTML = sesiones.map(function (s) {
+            const completada = s.estado === 'completada' || (s.fecha && new Date(s.fecha) < ahora);
+            const futura     = s.fecha && !completada;
 
             let estadoHtml = '';
             let accionHtml = '';
 
-            if (pasada) {
+            if (completada) {
                 estadoHtml = `<span class="leyre-sesion-badge leyre-sesion-badge--ok">Completada</span>`;
             } else if (futura) {
-                estadoHtml = `<span class="leyre-sesion-badge leyre-sesion-badge--fecha">${formatFecha(evento.inicio)}</span>`;
-                if (evento.zoom_link) {
-                    accionHtml = `<a href="${evento.zoom_link}" target="_blank" rel="noopener" class="leyre-sesion-link">Unirme →</a>`;
+                estadoHtml = `<span class="leyre-sesion-badge leyre-sesion-badge--fecha">${formatFecha(s.fecha)}</span>`;
+                if (s.enlace_reunion) {
+                    accionHtml = `<a href="${s.enlace_reunion}" target="_blank" rel="noopener" class="leyre-sesion-link">Unirme →</a>`;
                 }
             } else {
                 estadoHtml = `<span class="leyre-sesion-badge leyre-sesion-badge--pendiente">Por agendar</span>`;
-                if (tipo.calendly_link) {
-                    accionHtml = `<a href="${tipo.calendly_link}" target="_blank" rel="noopener" class="leyre-sesion-link">Agendar →</a>`;
-                }
             }
 
-            return `<li class="leyre-sesion-item${pasada ? ' leyre-sesion-item--completada' : ''}">
-                <div class="leyre-sesion-item__numero">${tipo.numero || '·'}</div>
+            return `<li class="leyre-sesion-item${completada ? ' leyre-sesion-item--completada' : ''}">
+                <div class="leyre-sesion-item__numero">${s.numero || '·'}</div>
                 <div class="leyre-sesion-item__body">
-                    <p class="leyre-sesion-item__nombre">${tipo.nombre}</p>
+                    <p class="leyre-sesion-item__nombre">${s.nombre}</p>
                     ${estadoHtml}
                 </div>
                 <div class="leyre-sesion-item__accion">${accionHtml}</div>
@@ -195,28 +169,33 @@ $user_id = get_current_user_id();
     }
 
     // ── Mentorías grupales ─────────────────────────────────────────────────
-    function renderGrupales(eventos) {
+    function renderGrupales(sesiones) {
         const lista = document.getElementById('leyre-lista-grupales');
 
-        if (!eventos.length) {
-            lista.innerHTML = '<li class="leyre-sesion-item" style="color:var(--leyre-muted)">Las mentorías grupales se publicarán pronto.</li>';
+        if (!sesiones.length) {
+            lista.innerHTML = '<li class="leyre-sesion-item" style="color:var(--c-muted,#8A8080)">Las mentorías grupales se publicarán pronto.</li>';
             return;
         }
 
-        lista.innerHTML = eventos.map(function (e) {
-            const pasada = esPasada(e.inicio);
-            return `<li class="leyre-sesion-item${pasada ? ' leyre-sesion-item--completada' : ''}">
+        const ahora = new Date();
+        lista.innerHTML = sesiones.map(function (s) {
+            const completada = s.estado === 'completada' || (s.fecha && new Date(s.fecha) < ahora);
+            const futura     = s.fecha && !completada;
+
+            return `<li class="leyre-sesion-item${completada ? ' leyre-sesion-item--completada' : ''}">
                 <div class="leyre-sesion-item__numero">●</div>
                 <div class="leyre-sesion-item__body">
-                    <p class="leyre-sesion-item__nombre">${e.nombre || 'Mentoría grupal'}</p>
-                    ${pasada
+                    <p class="leyre-sesion-item__nombre">${s.nombre || 'Mentoría grupal'}</p>
+                    ${completada
                         ? `<span class="leyre-sesion-badge leyre-sesion-badge--ok">Completada</span>`
-                        : `<span class="leyre-sesion-badge leyre-sesion-badge--fecha">${formatFecha(e.inicio)}</span>`
+                        : futura
+                            ? `<span class="leyre-sesion-badge leyre-sesion-badge--fecha">${formatFecha(s.fecha)}</span>`
+                            : `<span class="leyre-sesion-badge leyre-sesion-badge--pendiente">Por agendar</span>`
                     }
                 </div>
                 <div class="leyre-sesion-item__accion">
-                    ${!pasada && e.zoom_link
-                        ? `<a href="${e.zoom_link}" target="_blank" rel="noopener" class="leyre-sesion-link">Unirme →</a>`
+                    ${!completada && s.enlace_reunion
+                        ? `<a href="${s.enlace_reunion}" target="_blank" rel="noopener" class="leyre-sesion-link">Unirme →</a>`
                         : ''
                     }
                 </div>
