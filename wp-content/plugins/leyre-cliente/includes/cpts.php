@@ -157,11 +157,26 @@ function leyre_mb_leccion( $post ) {
 
 // ── Metabox: Recurso ─────────────────────────────────────────────────────────
 
+add_action( 'admin_enqueue_scripts', function( $hook ) {
+    global $post;
+    if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ] ) ) return;
+    if ( ! $post || $post->post_type !== 'leyre_recurso' ) return;
+    wp_enqueue_media();
+} );
+
 function leyre_mb_recurso( $post ) {
     wp_nonce_field( 'leyre_recurso_save', 'leyre_recurso_nonce' );
     $modulo_id    = get_post_meta( $post->ID, '_leyre_modulo_id',    true );
     $tipo         = get_post_meta( $post->ID, '_leyre_tipo',         true );
-    $ruta_archivo = get_post_meta( $post->ID, '_leyre_ruta_archivo', true );
+    $archivo_id   = (int) get_post_meta( $post->ID, '_leyre_archivo_id', true );
+
+    // Datos del archivo ya seleccionado
+    $archivo_nombre = '';
+    $archivo_url    = '';
+    if ( $archivo_id ) {
+        $archivo_nombre = basename( get_attached_file( $archivo_id ) );
+        $archivo_url    = wp_get_attachment_url( $archivo_id );
+    }
 
     $modulos = get_posts([
         'post_type'   => 'leyre_modulo',
@@ -189,9 +204,66 @@ function leyre_mb_recurso( $post ) {
         </select>
     </p>
     <p>
-        <label><strong>Ruta del archivo</strong> (relativa a <code>/wp-content/uploads/leyre-privado/</code>)</label><br>
-        <input type="text" name="leyre_ruta_archivo" value="<?php echo esc_attr( $ruta_archivo ); ?>" placeholder="ej: modulo-1/guia-accion.pdf" style="width:100%">
+        <label><strong>Archivo</strong></label><br>
+
+        <input type="hidden" name="leyre_archivo_id" id="leyre_archivo_id" value="<?php echo esc_attr( $archivo_id ); ?>">
+
+        <div id="leyre-archivo-preview" style="margin:8px 0;padding:10px 12px;background:#f6f7f7;border:1px solid #ddd;border-radius:4px;display:<?php echo $archivo_id ? 'flex' : 'none'; ?>;align-items:center;gap:10px">
+            <span id="leyre-archivo-nombre" style="flex:1;font-weight:600"><?php echo esc_html( $archivo_nombre ); ?></span>
+            <?php if ( $archivo_url ) : ?>
+            <a href="<?php echo esc_url( $archivo_url ); ?>" target="_blank" style="font-size:12px;color:#2271b1">Ver archivo</a>
+            <?php endif; ?>
+            <button type="button" id="leyre-quitar-archivo" style="background:none;border:none;color:#a00;cursor:pointer;font-size:12px;font-weight:600;padding:0">✕ Quitar</button>
+        </div>
+
+        <button type="button" id="leyre-subir-archivo" class="button button-secondary" style="margin-top:4px">
+            <?php echo $archivo_id ? '🔄 Cambiar archivo' : '📎 Seleccionar o subir archivo'; ?>
+        </button>
+        <span style="color:#888;font-size:12px;margin-left:8px">PDF, Word, Excel, imagen…</span>
     </p>
+
+    <script>
+    jQuery(function($) {
+        var frame;
+
+        $('#leyre-subir-archivo').on('click', function(e) {
+            e.preventDefault();
+
+            if ( frame ) { frame.open(); return; }
+
+            frame = wp.media({
+                title:    'Seleccionar o subir archivo',
+                button:   { text: 'Usar este archivo' },
+                multiple: false,
+            });
+
+            frame.on('select', function() {
+                var a = frame.state().get('selection').first().toJSON();
+                $('#leyre_archivo_id').val(a.id);
+                $('#leyre-archivo-nombre').text(a.filename);
+                $('#leyre-archivo-preview').show().css('display','flex');
+                // Actualizar enlace "Ver archivo"
+                var verLink = $('#leyre-archivo-preview a');
+                if (verLink.length) {
+                    verLink.attr('href', a.url);
+                } else {
+                    $('#leyre-archivo-nombre').after('<a href="' + a.url + '" target="_blank" style="font-size:12px;color:#2271b1">Ver archivo</a>');
+                }
+                $('#leyre-subir-archivo').text('🔄 Cambiar archivo');
+            });
+
+            frame.open();
+        });
+
+        $('#leyre-quitar-archivo').on('click', function(e) {
+            e.preventDefault();
+            $('#leyre_archivo_id').val('');
+            $('#leyre-archivo-preview').hide();
+            $('#leyre-subir-archivo').text('📎 Seleccionar o subir archivo');
+            frame = null;
+        });
+    });
+    </script>
     <?php
 }
 
@@ -247,9 +319,9 @@ function leyre_guardar_meta_recurso( $post_id ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
     if ( get_post_type( $post_id ) !== 'leyre_recurso' ) return;
 
-    update_post_meta( $post_id, '_leyre_modulo_id',    absint( $_POST['leyre_modulo_id']             ?? 0 ) );
-    update_post_meta( $post_id, '_leyre_tipo',         sanitize_text_field( $_POST['leyre_tipo']     ?? 'pdf' ) );
-    update_post_meta( $post_id, '_leyre_ruta_archivo', sanitize_text_field( $_POST['leyre_ruta_archivo'] ?? '' ) );
+    update_post_meta( $post_id, '_leyre_modulo_id',  absint( $_POST['leyre_modulo_id'] ?? 0 ) );
+    update_post_meta( $post_id, '_leyre_tipo',        sanitize_text_field( $_POST['leyre_tipo'] ?? 'pdf' ) );
+    update_post_meta( $post_id, '_leyre_archivo_id',  absint( $_POST['leyre_archivo_id'] ?? 0 ) );
 }
 
 add_action( 'save_post', 'leyre_guardar_meta_sesion_tipo' );

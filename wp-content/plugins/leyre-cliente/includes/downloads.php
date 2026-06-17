@@ -36,11 +36,25 @@ function leyre_servir_descarga() {
     $post = get_post( $recurso_id );
     if ( ! $post || $post->post_type !== 'leyre_recurso' ) wp_die( 'Recurso no encontrado.', 404 );
 
-    $ruta_relativa = get_post_meta( $recurso_id, '_leyre_ruta_archivo', true );
-    if ( ! $ruta_relativa ) wp_die( 'Archivo no disponible.', 404 );
+    // Intentar primero con attachment de la media library
+    $archivo_id    = (int) get_post_meta( $recurso_id, '_leyre_archivo_id', true );
+    $ruta_completa = '';
 
-    $ruta_completa = WP_CONTENT_DIR . '/uploads/leyre-privado/' . $ruta_relativa;
-    if ( ! file_exists( $ruta_completa ) ) wp_die( 'Archivo no encontrado en el servidor.', 404 );
+    if ( $archivo_id ) {
+        $ruta_completa = get_attached_file( $archivo_id );
+    }
+
+    // Fallback: ruta manual legacy en /leyre-privado/
+    if ( ! $ruta_completa || ! file_exists( $ruta_completa ) ) {
+        $ruta_relativa = get_post_meta( $recurso_id, '_leyre_ruta_archivo', true );
+        if ( $ruta_relativa ) {
+            $ruta_completa = WP_CONTENT_DIR . '/uploads/leyre-privado/' . $ruta_relativa;
+        }
+    }
+
+    if ( ! $ruta_completa || ! file_exists( $ruta_completa ) ) {
+        wp_die( 'Archivo no disponible.', 404 );
+    }
 
     $nombre_archivo = basename( $ruta_completa );
     $mime           = mime_content_type( $ruta_completa ) ?: 'application/octet-stream';
