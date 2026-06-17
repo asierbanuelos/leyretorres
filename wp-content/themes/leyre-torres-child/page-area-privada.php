@@ -96,8 +96,20 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
                 <h2 class="leyre-section__title--xl">Tus materiales</h2>
                 <a href="<?php echo home_url( '/recursos' ); ?>" class="leyre-section__link">Ver todos →</a>
             </div>
-            <p style="color:var(--leyre-muted);margin-bottom:20px">Accede a todos tus materiales descargables del programa.</p>
-            <a href="<?php echo home_url( '/recursos' ); ?>" class="leyre-btn leyre-btn--outline">Ver recursos</a>
+            <div class="leyre-recursos-grid" id="leyre-recursos-dashboard">
+                <?php for ( $i = 0; $i < 2; $i++ ) : ?>
+                <div class="leyre-recurso-card">
+                    <div class="leyre-recurso-card__icono" style="background:#FDF2F1">
+                        <div class="leyre-skeleton" style="width:32px;height:38px;border-radius:4px"></div>
+                    </div>
+                    <div class="leyre-recurso-card__info">
+                        <div class="leyre-skeleton" style="height:11px;width:60px;margin-bottom:8px"></div>
+                        <div class="leyre-skeleton" style="height:15px;width:75%"></div>
+                    </div>
+                    <div class="leyre-skeleton" style="height:40px;width:110px;border-radius:8px;flex-shrink:0"></div>
+                </div>
+                <?php endfor; ?>
+            </div>
         </section>
 
         <!-- ── Comunidad ──────────────────────────────────────────────────── -->
@@ -136,6 +148,10 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
         renderModulos(modulos.slice(0, 3));
     }).catch(function () {});
 
+    leyreAPI.get('recursos').then(function (recursos) {
+        renderRecursosDashboard(recursos.slice(0, 4));
+    }).catch(function () {});
+
     function renderProximaSesion(sesion) {
         const el = document.getElementById('leyre-proxima-sesion');
         if (!sesion) {
@@ -168,6 +184,41 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
                 : `<span class="leyre-btn leyre-btn--pill leyre-btn--disabled">Link próximamente</span>`
             }
         </div>`;
+    }
+
+    function recursoTipoConfig(tipo) {
+        var cfg = {
+            pdf:      { color:'#B23A2F', bg:'#FDF2F1', label:'PDF',      svg:'<svg viewBox="0 0 28 34" fill="none"><path d="M4 2h14l8 8v22a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#FDF2F1" stroke="#B23A2F" stroke-width="1.5"/><path d="M18 2v8h8" stroke="#B23A2F" stroke-width="1.5" fill="none"/><rect x="2" y="17" width="18" height="10" rx="2" fill="#B23A2F"/><text x="11" y="25" font-family="Arial" font-size="7" font-weight="700" fill="white" text-anchor="middle">PDF</text></svg>' },
+            plantilla:{ color:'#7A5C1E', bg:'#FBF5E8', label:'Plantilla',svg:'<svg viewBox="0 0 28 34" fill="none"><path d="M4 2h14l8 8v22a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#FBF5E8" stroke="#C5A882" stroke-width="1.5"/><path d="M18 2v8h8" stroke="#C5A882" stroke-width="1.5"/><path d="M7 18h14M7 22h10M7 26h12" stroke="#C5A882" stroke-width="1.5" stroke-linecap="round"/></svg>' },
+            otro:     { color:'#3A5C7A', bg:'#EEF4F9', label:'Archivo',  svg:'<svg viewBox="0 0 28 34" fill="none"><path d="M4 2h14l8 8v22a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#EEF4F9" stroke="#3A5C7A" stroke-width="1.5"/><path d="M18 2v8h8" stroke="#3A5C7A" stroke-width="1.5"/><path d="M7 18h14M7 22h10M7 26h12" stroke="#3A5C7A" stroke-width="1.5" stroke-linecap="round"/></svg>' }
+        };
+        return cfg[tipo] || cfg.otro;
+    }
+
+    function renderRecursosDashboard(recursos) {
+        var grid = document.getElementById('leyre-recursos-dashboard');
+        if (!recursos.length) {
+            grid.innerHTML = '<p style="color:var(--c-muted,#8A8080);grid-column:1/-1;font-size:14px">Los recursos se añadirán próximamente.</p>';
+            return;
+        }
+        grid.innerHTML = recursos.map(function(r) {
+            var cfg = recursoTipoConfig(r.tipo || 'otro');
+            return '<div class="leyre-recurso-card">' +
+                '<div class="leyre-recurso-card__icono" style="background:' + cfg.bg + '">' + cfg.svg + '</div>' +
+                '<div class="leyre-recurso-card__info">' +
+                    '<div class="leyre-recurso-card__badges">' +
+                        '<span class="leyre-recurso-card__tipo" style="color:' + cfg.color + ';background:' + cfg.bg + '">' + cfg.label + '</span>' +
+                    '</div>' +
+                    '<p class="leyre-recurso-card__titulo">' + r.titulo + '</p>' +
+                '</div>' +
+                '<div class="leyre-recurso-card__accion">' +
+                    '<a href="' + r.url_descarga + '" class="leyre-recurso-card__btn">' +
+                        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/><path d="M3 20h18"/></svg>' +
+                        'Descargar' +
+                    '</a>' +
+                '</div>' +
+            '</div>';
+        }).join('');
     }
 
     function renderModulos(modulos) {
