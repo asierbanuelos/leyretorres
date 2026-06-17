@@ -10,6 +10,9 @@ function leyre_tiene_acceso( $user_id = null ) {
     if ( ! $user_id ) $user_id = get_current_user_id();
     if ( ! $user_id ) return false;
 
+    // Los administradores siempre tienen acceso
+    if ( user_can( $user_id, 'manage_options' ) ) return true;
+
     $activo    = get_user_meta( $user_id, 'leyre_acceso_activo', true );
     $fecha_fin = get_user_meta( $user_id, 'leyre_fecha_fin', true );
 
