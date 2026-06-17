@@ -10,13 +10,15 @@ Text Domain:  leyre-torres-child
 /* ── Tokens de diseño ──────────────────────────────────────────────────── */
 :root {
   --leyre-beige:        #C5A882;
+  --leyre-beige-light:  #D9C4A8;
   --leyre-bg:           #F5F0EA;
   --leyre-dark:         #1A1A1A;
-  --leyre-text:         #333333;
+  --leyre-text:         #2B2B2B;
   --leyre-muted:        #888888;
   --leyre-white:        #FFFFFF;
   --leyre-success:      #4CAF50;
-  --leyre-radius:       8px;
+  --leyre-radius:       10px;
+  --leyre-navbar-h:     64px;
   --leyre-font-title:   'Playfair Display', Georgia, serif;
   --leyre-font-body:    'Inter', Arial, sans-serif;
 }
@@ -37,23 +39,27 @@ body.leyre-area-privada #wpadminbar + header {
 
 /* ── Navbar interna ─────────────────────────────────────────────────────── */
 .leyre-navbar {
-  background: var(--leyre-dark);
+  background: var(--leyre-white);
+  border-bottom: 1px solid rgba(0,0,0,.07);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
-  height: 60px;
+  height: var(--leyre-navbar-h);
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 1px 6px rgba(0,0,0,.04);
 }
 
 .leyre-navbar__logo {
   font-family: var(--leyre-font-title);
   font-style: italic;
-  color: var(--leyre-beige);
+  color: var(--leyre-dark);
   font-size: 20px;
+  letter-spacing: .01em;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .leyre-navbar__nav {
@@ -61,40 +67,72 @@ body.leyre-area-privada #wpadminbar + header {
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 8px;
+  gap: 4px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .leyre-navbar__nav a {
-  color: rgba(255,255,255,0.75);
+  color: var(--leyre-text);
   text-decoration: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: .05em;
+  letter-spacing: .07em;
   text-transform: uppercase;
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 4px;
   transition: color .2s, background .2s;
 }
 
-.leyre-navbar__nav a:hover,
+.leyre-navbar__nav a:hover {
+  color: var(--leyre-dark);
+  background: var(--leyre-bg);
+}
+
 .leyre-navbar__nav a.active {
-  color: var(--leyre-white);
-  background: rgba(255,255,255,0.08);
+  color: var(--leyre-beige);
+  background: rgba(197,168,130,.08);
 }
 
 .leyre-navbar__user {
   display: flex;
   align-items: center;
-  gap: 16px;
-  color: rgba(255,255,255,0.75);
-  font-size: 13px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
-.leyre-navbar__user a {
-  color: var(--leyre-beige);
-  text-decoration: none;
-  font-size: 12px;
+.leyre-navbar__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--leyre-beige);
+  color: var(--leyre-white);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--leyre-font-title);
+  flex-shrink: 0;
 }
+
+.leyre-navbar__nombre {
+  font-size: 13px;
+  color: var(--leyre-text);
+  white-space: nowrap;
+}
+
+.leyre-navbar__salir {
+  font-size: 12px;
+  color: var(--leyre-muted);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color .2s;
+}
+
+.leyre-navbar__salir:hover { color: var(--leyre-dark); }
 
 /* Hamburguesa (mobile) */
 .leyre-navbar__toggle {
@@ -109,9 +147,16 @@ body.leyre-area-privada #wpadminbar + header {
   display: block;
   width: 22px;
   height: 2px;
-  background: var(--leyre-white);
+  background: var(--leyre-dark);
   margin: 4px 0;
   transition: .3s;
+}
+
+@media (max-width: 900px) {
+  .leyre-navbar__nav {
+    position: static;
+    transform: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -119,17 +164,19 @@ body.leyre-area-privada #wpadminbar + header {
   .leyre-navbar__nav {
     display: none;
     position: absolute;
-    top: 60px;
+    top: var(--leyre-navbar-h);
     left: 0;
     right: 0;
-    background: var(--leyre-dark);
+    background: var(--leyre-white);
+    border-bottom: 1px solid #eee;
     flex-direction: column;
-    padding: 12px 0;
+    padding: 8px 0;
     gap: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
   }
   .leyre-navbar__nav.open { display: flex; }
   .leyre-navbar__nav a { padding: 12px 24px; border-radius: 0; }
-  .leyre-navbar__user { display: none; }
+  .leyre-navbar__nombre { display: none; }
 }
 
 /* ── Layout principal ───────────────────────────────────────────────────── */
@@ -140,43 +187,75 @@ body.leyre-area-privada #wpadminbar + header {
 }
 
 .leyre-main {
-  padding: 40px 0 80px;
+  padding: 0 0 80px;
 }
 
 /* ── Hero / progreso ────────────────────────────────────────────────────── */
 .leyre-hero {
   background: var(--leyre-beige);
-  padding: 40px 32px;
-  border-radius: var(--leyre-radius);
-  margin-bottom: 40px;
+  width: 100%;
+  padding: 52px 0 48px;
+  margin-bottom: 0;
 }
+
+.leyre-hero__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.leyre-hero__texto { color: var(--leyre-white); }
 
 .leyre-hero__saludo {
   font-family: var(--leyre-font-title);
   font-style: italic;
-  font-size: 32px;
+  font-size: 40px;
   color: var(--leyre-white);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
+  line-height: 1.15;
 }
 
 .leyre-hero__sub {
-  color: rgba(255,255,255,0.85);
+  color: rgba(255,255,255,.82);
   font-size: 15px;
-  margin: 0 0 24px;
+  margin: 0;
+  letter-spacing: .01em;
+}
+
+.leyre-hero__progreso { max-width: 640px; }
+
+.leyre-hero__progreso-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: rgba(255,255,255,.85);
+  margin-bottom: 10px;
+  font-weight: 500;
 }
 
 .leyre-progress-bar {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.28);
   border-radius: 99px;
   height: 10px;
-  margin-top: 8px;
+}
+
+.leyre-progress-bar--hero {
+  background: rgba(255,255,255,.25);
+  height: 8px;
 }
 
 .leyre-progress-bar__fill {
-  background: var(--leyre-white);
+  background: var(--leyre-beige);
   border-radius: 99px;
   height: 100%;
-  transition: width .5s ease;
+  transition: width .6s ease;
+}
+
+.leyre-progress-bar__fill--blanco {
+  background: var(--leyre-white);
 }
 
 .leyre-progress-label {
@@ -185,9 +264,23 @@ body.leyre-area-privada #wpadminbar + header {
   margin-top: 6px;
 }
 
+/* ── Contenido tras el hero ─────────────────────────────────────────────── */
+.leyre-container { padding-top: 48px; }
+
 /* ── Cards / secciones ──────────────────────────────────────────────────── */
 .leyre-section {
-  margin-bottom: 48px;
+  margin-bottom: 52px;
+}
+
+.leyre-section--last { margin-bottom: 0; }
+
+.leyre-section__kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: var(--leyre-beige);
+  margin-bottom: 6px;
 }
 
 .leyre-section__header {
@@ -205,41 +298,83 @@ body.leyre-area-privada #wpadminbar + header {
   margin: 0;
 }
 
+.leyre-section__title--xl {
+  font-family: var(--leyre-font-title);
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--leyre-dark);
+  margin: 0;
+  line-height: 1.2;
+}
+
 .leyre-section__link {
   font-size: 13px;
   color: var(--leyre-beige);
   text-decoration: none;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-/* Card próxima sesión */
+/* Card próxima sesión ─ flex row */
 .leyre-card-sesion {
   background: var(--leyre-dark);
   color: var(--leyre-white);
   border-radius: var(--leyre-radius);
-  padding: 28px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
   margin-bottom: 24px;
 }
 
+.leyre-card-sesion__icono-wrap {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  background: rgba(255,255,255,.08);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.leyre-card-sesion__icono-wrap svg {
+  width: 26px;
+  height: 26px;
+  stroke: var(--leyre-beige);
+}
+
+.leyre-card-sesion__info { flex: 1; min-width: 0; }
+
 .leyre-card-sesion__tipo {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--leyre-beige);
-  margin-bottom: 8px;
+  margin: 0 0 6px;
 }
 
 .leyre-card-sesion__titulo {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .leyre-card-sesion__fecha {
-  color: rgba(255,255,255,0.6);
-  font-size: 14px;
-  margin-bottom: 20px;
+  color: rgba(255,255,255,.55);
+  font-size: 13px;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .leyre-card-sesion { flex-wrap: wrap; }
+  .leyre-card-sesion .leyre-btn--pill { width: 100%; text-align: center; }
 }
 
 /* Grid módulos */
@@ -331,6 +466,19 @@ body.leyre-area-privada #wpadminbar + header {
 .leyre-btn--beige    { background: var(--leyre-beige); color: var(--leyre-white); }
 .leyre-btn--outline  { background: transparent; border: 2px solid var(--leyre-dark); color: var(--leyre-dark); }
 .leyre-btn--disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+.leyre-btn--pill {
+  background: var(--leyre-white);
+  color: var(--leyre-dark);
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 12px 22px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: none;
+}
 
 /* ── Skeleton loader ────────────────────────────────────────────────────── */
 .leyre-skeleton {

@@ -4,9 +4,6 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-// La protección de acceso está en el plugin (hook template_redirect en access.php)
-// Si llegamos aquí, el usuario está logueado y tiene acceso activo.
-
 $user_id    = get_current_user_id();
 $user       = wp_get_current_user();
 $dia        = leyre_get_dia_programa( $user_id );
@@ -18,7 +15,7 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Área privada — <?php bloginfo( 'name' ); ?></title>
+    <title>Mi programa — <?php bloginfo( 'name' ); ?></title>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class( 'leyre-area-privada' ); ?>>
@@ -26,49 +23,59 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
 
 <?php get_template_part( 'templates/navbar' ); ?>
 
-<!-- ── Contenido principal ─────────────────────────────────────────────── -->
 <main class="leyre-main">
-    <div class="leyre-container">
 
-        <!-- Hero / progreso -->
-        <div class="leyre-hero">
-            <p class="leyre-hero__saludo">Hola, <?php echo esc_html( $user->display_name ); ?></p>
-            <p class="leyre-hero__sub">Bienvenida a Leonas en Tacones</p>
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+    <div class="leyre-hero">
+        <div class="leyre-hero__inner">
+            <div class="leyre-hero__texto">
+                <h1 class="leyre-hero__saludo">Hola, <?php echo esc_html( $user->display_name ); ?></h1>
+                <p class="leyre-hero__sub">Bienvenida a Leonas en Tacones</p>
+            </div>
             <?php if ( $dia !== null ) : ?>
-            <div>
-                <div class="leyre-progress-bar">
-                    <div class="leyre-progress-bar__fill" style="width:<?php echo $porcentaje; ?>%"></div>
+            <div class="leyre-hero__progreso">
+                <div class="leyre-hero__progreso-labels">
+                    <span>Tu progreso en el programa</span>
+                    <span>Día <?php echo $dia; ?> de <?php echo $duracion; ?></span>
                 </div>
-                <p class="leyre-progress-label">Día <?php echo $dia; ?> de <?php echo $duracion; ?></p>
+                <div class="leyre-progress-bar leyre-progress-bar--hero">
+                    <div class="leyre-progress-bar__fill leyre-progress-bar__fill--blanco" style="width:<?php echo $porcentaje; ?>%"></div>
+                </div>
             </div>
             <?php endif; ?>
         </div>
+    </div>
 
-        <!-- Mis sesiones (resumen) -->
-        <section class="leyre-section" id="leyre-sesiones">
+    <div class="leyre-container">
+
+        <!-- ── Mis sesiones ───────────────────────────────────────────────── -->
+        <section class="leyre-section">
+            <div class="leyre-section__kicker">Mis sesiones</div>
             <div class="leyre-section__header">
-                <h2 class="leyre-section__title">Mis sesiones</h2>
-                <a href="<?php echo home_url( '/mis-sesiones' ); ?>" class="leyre-section__link">Ver todo →</a>
+                <h2 class="leyre-section__title--xl">Tu acompañamiento en directo</h2>
+                <a href="<?php echo home_url( '/mis-sesiones' ); ?>" class="leyre-section__link">Ver todas →</a>
             </div>
             <div id="leyre-proxima-sesion">
-                <!-- Cargado via JS desde /wp-json/leyre/v1/dashboard -->
-                <div class="leyre-card-sesion">
-                    <div class="leyre-skeleton" style="height:14px;width:140px;margin-bottom:10px"></div>
-                    <div class="leyre-skeleton" style="height:22px;width:60%;margin-bottom:8px"></div>
-                    <div class="leyre-skeleton" style="height:14px;width:40%;margin-bottom:20px"></div>
-                    <div class="leyre-skeleton" style="height:44px;width:160px;border-radius:4px"></div>
+                <div class="leyre-card-sesion leyre-card-sesion--skeleton">
+                    <div class="leyre-card-sesion__icono-wrap"><div class="leyre-skeleton" style="width:40px;height:40px;border-radius:6px"></div></div>
+                    <div class="leyre-card-sesion__info" style="flex:1">
+                        <div class="leyre-skeleton" style="height:11px;width:160px;margin-bottom:10px"></div>
+                        <div class="leyre-skeleton" style="height:20px;width:55%;margin-bottom:8px"></div>
+                        <div class="leyre-skeleton" style="height:11px;width:40%"></div>
+                    </div>
+                    <div class="leyre-skeleton" style="height:40px;width:160px;border-radius:99px;flex-shrink:0"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Mis cursos (resumen) -->
-        <section class="leyre-section" id="leyre-cursos">
+        <!-- ── Mis cursos ────────────────────────────────────────────────── -->
+        <section class="leyre-section">
+            <div class="leyre-section__kicker">Mis cursos</div>
             <div class="leyre-section__header">
-                <h2 class="leyre-section__title">Mis cursos</h2>
-                <a href="<?php echo home_url( '/mis-cursos' ); ?>" class="leyre-section__link">Ver todo →</a>
+                <h2 class="leyre-section__title--xl">Tu formación</h2>
+                <a href="<?php echo home_url( '/mis-cursos' ); ?>" class="leyre-section__link">Ver todos →</a>
             </div>
             <div class="leyre-grid-modulos" id="leyre-grid-modulos">
-                <!-- Skeleton: 3 cards -->
                 <?php for ( $i = 0; $i < 3; $i++ ) : ?>
                 <div class="leyre-card-modulo" style="pointer-events:none">
                     <div class="leyre-card-modulo__thumb leyre-skeleton" style="aspect-ratio:16/9"></div>
@@ -82,26 +89,27 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
             </div>
         </section>
 
-        <!-- Recursos (CTA) -->
+        <!-- ── Recursos ──────────────────────────────────────────────────── -->
         <section class="leyre-section">
+            <div class="leyre-section__kicker">Recursos</div>
             <div class="leyre-section__header">
-                <h2 class="leyre-section__title">Recursos</h2>
-                <a href="<?php echo home_url( '/recursos' ); ?>" class="leyre-section__link">Ver todo →</a>
+                <h2 class="leyre-section__title--xl">Tus materiales</h2>
+                <a href="<?php echo home_url( '/recursos' ); ?>" class="leyre-section__link">Ver todos →</a>
             </div>
-            <p style="color:var(--leyre-muted)">Accede a todos tus materiales descargables del programa.</p>
+            <p style="color:var(--leyre-muted);margin-bottom:20px">Accede a todos tus materiales descargables del programa.</p>
             <a href="<?php echo home_url( '/recursos' ); ?>" class="leyre-btn leyre-btn--outline">Ver recursos</a>
         </section>
 
-        <!-- Comunidad -->
+        <!-- ── Comunidad ──────────────────────────────────────────────────── -->
         <?php
-        $wa_url    = get_option( 'leyre_whatsapp_url' );
-        $img_id    = (int) get_option( 'leyre_comunidad_imagen_id', 0 );
-        $img_url   = $img_id ? wp_get_attachment_image_url( $img_id, 'large' ) : '';
-        $bg_style  = $img_url
-            ? "background:linear-gradient(rgba(26,26,26,.65),rgba(26,26,26,.65)),url('{$img_url}') center/cover no-repeat"
+        $wa_url   = get_option( 'leyre_whatsapp_url' );
+        $img_id   = (int) get_option( 'leyre_comunidad_imagen_id', 0 );
+        $img_url  = $img_id ? wp_get_attachment_image_url( $img_id, 'large' ) : '';
+        $bg_style = $img_url
+            ? "background:linear-gradient(rgba(26,26,26,.6),rgba(26,26,26,.6)),url('{$img_url}') center/cover no-repeat"
             : 'background:var(--leyre-dark)';
         ?>
-        <section class="leyre-section">
+        <section class="leyre-section leyre-section--last">
             <div class="leyre-comunidad-banner" style="<?php echo esc_attr( $bg_style ); ?>">
                 <h2 class="leyre-comunidad-banner__titulo">No recorres este camino sola</h2>
                 <p class="leyre-comunidad-banner__sub">Únete a la comunidad y conecta con el resto de leonas.</p>
@@ -119,40 +127,45 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
 <?php wp_footer(); ?>
 
 <script>
-(function() {
-    // Cargar datos del dashboard
-    fetch(leyreConfig.apiUrl + 'dashboard', {
-        headers: { 'X-WP-Nonce': leyreConfig.nonce }
-    })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-        if (!data) return;
+(function () {
+    leyreAPI.get('dashboard').then(function (data) {
         renderProximaSesion(data.proxima_sesion);
-    })
-    .catch(() => {});
+    }).catch(function () {});
 
-    fetch(leyreConfig.apiUrl + 'modulos', {
-        headers: { 'X-WP-Nonce': leyreConfig.nonce }
-    })
-    .then(r => r.ok ? r.json() : [])
-    .then(modulos => renderModulos(modulos.slice(0, 3)))
-    .catch(() => {});
+    leyreAPI.get('modulos').then(function (modulos) {
+        renderModulos(modulos.slice(0, 3));
+    }).catch(function () {});
 
     function renderProximaSesion(sesion) {
         const el = document.getElementById('leyre-proxima-sesion');
         if (!sesion) {
-            el.innerHTML = '<div class="leyre-card-sesion"><p style="color:rgba(255,255,255,.6);margin:0">No tienes sesiones programadas próximamente.</p></div>';
+            el.innerHTML = `<div class="leyre-card-sesion">
+                <div class="leyre-card-sesion__icono-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+                </div>
+                <div class="leyre-card-sesion__info">
+                    <p class="leyre-card-sesion__tipo">Próxima sesión · 1:1 con Leyre</p>
+                    <p class="leyre-card-sesion__titulo" style="opacity:.5">No tienes sesiones programadas próximamente</p>
+                </div>
+            </div>`;
             return;
         }
-        const fecha = new Date(sesion.inicio).toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit', timeZone:'Europe/Madrid' });
-        el.innerHTML = `
-        <div class="leyre-card-sesion">
-            <p class="leyre-card-sesion__tipo">Próxima sesión</p>
-            <p class="leyre-card-sesion__titulo">${sesion.nombre || 'Sesión'}</p>
-            <p class="leyre-card-sesion__fecha">${fecha} (CET)</p>
+        const fecha = new Date(sesion.inicio).toLocaleString('es-ES', {
+            weekday: 'long', day: 'numeric', month: 'long',
+            hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid'
+        });
+        el.innerHTML = `<div class="leyre-card-sesion">
+            <div class="leyre-card-sesion__icono-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+            </div>
+            <div class="leyre-card-sesion__info">
+                <p class="leyre-card-sesion__tipo">Próxima sesión · 1:1 con Leyre</p>
+                <p class="leyre-card-sesion__titulo">${sesion.nombre || 'Sesión individual'}</p>
+                <p class="leyre-card-sesion__fecha">${fecha} (CET)</p>
+            </div>
             ${sesion.zoom_link
-                ? `<a href="${sesion.zoom_link}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--beige">Unirme por Zoom</a>`
-                : `<span class="leyre-btn leyre-btn--beige leyre-btn--disabled">Link próximamente</span>`
+                ? `<a href="${sesion.zoom_link}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--pill">Unirme por Zoom</a>`
+                : `<span class="leyre-btn leyre-btn--pill leyre-btn--disabled">Link próximamente</span>`
             }
         </div>`;
     }
@@ -160,34 +173,31 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
     function renderModulos(modulos) {
         const grid = document.getElementById('leyre-grid-modulos');
         if (!modulos.length) {
-            grid.innerHTML = '<p style="color:var(--leyre-muted)">Aún no hay módulos disponibles.</p>';
+            grid.innerHTML = '<p style="color:var(--leyre-muted)">Los módulos se publicarán próximamente.</p>';
             return;
         }
-        grid.innerHTML = modulos.map(m => {
+        grid.innerHTML = modulos.map(function (m) {
             const locked = !m.desbloqueado;
-            const progreso = m.progreso;
-            let estadoLabel = 'Sin empezar';
-            if (progreso.completadas === progreso.total && progreso.total > 0) estadoLabel = 'Completado ✓';
-            else if (progreso.completadas > 0) estadoLabel = `${progreso.porcentaje}% · ${progreso.completadas} de ${progreso.total} lecciones`;
+            const p = m.progreso;
+            let estado = 'Sin empezar';
+            if (p.completadas === p.total && p.total > 0) estado = 'Completado ✓';
+            else if (p.completadas > 0) estado = p.porcentaje + '% · ' + p.completadas + ' de ' + p.total + ' lecciones';
 
             return `<a href="${locked ? '#' : '/mis-cursos/modulo-' + m.id}" class="leyre-card-modulo${locked ? ' leyre-card-modulo--locked' : ''}">
                 <div class="leyre-card-modulo__thumb">
-                    ${m.thumbnail ? `<img src="${m.thumbnail}" alt="">` : ''}
+                    ${m.thumbnail ? `<img src="${m.thumbnail}" alt="${m.titulo}" loading="lazy">` : '<div style="width:100%;height:100%;background:var(--leyre-beige-light)"></div>'}
                     <div class="leyre-card-modulo__play">
                         ${locked
-                            ? '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-6 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm3-9H9V6a3 3 0 0 1 6 0v2z"/></svg>'
-                            : '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'
+                            ? `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-6 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm3-9H9V6a3 3 0 0 1 6 0v2z"/></svg>`
+                            : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`
                         }
                     </div>
                 </div>
                 <div class="leyre-card-modulo__body">
                     <p class="leyre-card-modulo__etiqueta">Módulo ${m.numero}</p>
                     <p class="leyre-card-modulo__titulo">${m.titulo}</p>
-                    <p class="leyre-card-modulo__estado">${locked ? '🔒 Disponible próximamente' : estadoLabel}</p>
-                    ${!locked && progreso.total > 0 ? `
-                    <div class="leyre-progress-bar" style="background:rgba(197,168,130,.2)">
-                        <div class="leyre-progress-bar__fill" style="width:${progreso.porcentaje}%;background:var(--leyre-beige)"></div>
-                    </div>` : ''}
+                    <p class="leyre-card-modulo__estado">${locked ? '🔒 Disponible próximamente' : estado}</p>
+                    ${!locked && p.total > 0 ? `<div class="leyre-progress-bar leyre-progress-bar--sm" style="margin-top:8px"><div class="leyre-progress-bar__fill" style="width:${p.porcentaje}%;background:${p.porcentaje===100?'#4CAF50':'var(--leyre-beige)'}"></div></div>` : ''}
                 </div>
             </a>`;
         }).join('');
