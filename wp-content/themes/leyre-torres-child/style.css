@@ -360,3 +360,238 @@ body.leyre-area-privada #wpadminbar + header {
 }
 
 .leyre-sin-acceso p { color: var(--leyre-muted); margin-bottom: 28px; }
+
+/* ── Semana 2: mis-cursos ────────────────────────────────────────────────── */
+.leyre-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.leyre-page-title {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--leyre-dark);
+  margin: 0;
+}
+
+.leyre-progreso-resumen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--leyre-muted);
+}
+
+.leyre-progress-bar--sm { height: 6px; min-width: 100px; }
+
+.leyre-grid-modulos--full {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 900px) { .leyre-grid-modulos--full { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .leyre-grid-modulos--full { grid-template-columns: 1fr; } }
+
+.leyre-card-modulo__desc {
+  font-size: 13px;
+  color: var(--leyre-muted);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.leyre-card-modulo__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #4CAF50;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+
+.leyre-badge--ok { color: #4CAF50; font-weight: 700; }
+
+/* ── Semana 2: interior de módulo ────────────────────────────────────────── */
+.leyre-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  color: var(--leyre-muted);
+}
+
+.leyre-breadcrumb a {
+  color: var(--leyre-beige);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.leyre-modulo-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .leyre-modulo-layout {
+    grid-template-columns: 1fr;
+  }
+  .leyre-modulo-sidebar {
+    order: 2;
+  }
+  .leyre-modulo-content {
+    order: 1;
+  }
+}
+
+.leyre-modulo-sidebar {
+  background: var(--leyre-white);
+  border-radius: var(--leyre-radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  overflow: hidden;
+  position: sticky;
+  top: 76px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.leyre-modulo-sidebar__header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.leyre-modulo-sidebar__modulo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--leyre-dark);
+  margin: 0 0 12px;
+}
+
+.leyre-modulo-sidebar__progreso {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.leyre-leccion-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0 20px;
+}
+
+.leyre-leccion-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.leyre-leccion-item:last-child { border-bottom: none; }
+.leyre-leccion-item:hover .leyre-leccion-item__titulo { color: var(--leyre-beige); }
+
+.leyre-leccion-item__estado {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--leyre-muted);
+}
+
+.leyre-leccion-item--completada .leyre-leccion-item__estado {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  color: #fff;
+}
+
+.leyre-leccion-item--actual .leyre-leccion-item__estado {
+  border-color: var(--leyre-beige);
+  color: var(--leyre-beige);
+  font-size: 10px;
+}
+
+.leyre-leccion-item__titulo { font-weight: 600; font-size: 13px; color: var(--leyre-dark); }
+.leyre-leccion-item__duracion { font-size: 11px; color: var(--leyre-muted); margin-top: 2px; }
+
+/* Área de contenido de la lección */
+.leyre-main--modulo { padding-top: 24px; }
+
+.leyre-leccion-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0 16px;
+  flex-wrap: wrap;
+}
+
+.leyre-leccion-header__duracion {
+  font-size: 12px;
+  color: var(--leyre-muted);
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.leyre-leccion-header__titulo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 24px;
+  color: var(--leyre-dark);
+  margin: 0;
+}
+
+.leyre-leccion-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--leyre-text);
+  margin-bottom: 32px;
+}
+
+.leyre-nav-lecciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px 0;
+  border-top: 1px solid #eee;
+}
+
+.leyre-leccion-ended {
+  background: var(--leyre-bg);
+  border: 2px solid var(--leyre-beige);
+  border-radius: var(--leyre-radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.leyre-leccion-ended p {
+  font-weight: 600;
+  color: var(--leyre-dark);
+  margin: 0;
+}

@@ -14,6 +14,7 @@ define( 'LEYRE_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'LEYRE_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 
 require_once LEYRE_PLUGIN_DIR . 'includes/access.php';
+require_once LEYRE_PLUGIN_DIR . 'includes/routing.php';
 require_once LEYRE_PLUGIN_DIR . 'includes/cpts.php';
 require_once LEYRE_PLUGIN_DIR . 'includes/progress.php';
 require_once LEYRE_PLUGIN_DIR . 'includes/calendly.php';
