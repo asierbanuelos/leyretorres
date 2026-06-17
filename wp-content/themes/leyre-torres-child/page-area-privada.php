@@ -8,7 +8,8 @@ $user_id    = get_current_user_id();
 $user       = wp_get_current_user();
 $dia        = leyre_get_dia_programa( $user_id );
 $duracion   = (int) get_option( 'leyre_duracion_programa', 90 );
-$porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 0;
+$dia_show   = $dia ?? 0;
+$porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 0;
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -32,17 +33,19 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
                 <h1 class="leyre-hero__saludo">Hola, <?php echo esc_html( $user->display_name ); ?></h1>
                 <p class="leyre-hero__sub">Bienvenida a Leonas en Tacones</p>
             </div>
-            <?php if ( $dia !== null ) : ?>
             <div class="leyre-hero__progreso">
                 <div class="leyre-hero__progreso-labels">
                     <span>Tu progreso en el programa</span>
-                    <span>Día <?php echo $dia; ?> de <?php echo $duracion; ?></span>
+                    <?php if ( $dia !== null ) : ?>
+                        <span>Día <?php echo $dia; ?> de <?php echo $duracion; ?></span>
+                    <?php else : ?>
+                        <span style="opacity:.7">Programa por comenzar</span>
+                    <?php endif; ?>
                 </div>
                 <div class="leyre-progress-bar leyre-progress-bar--hero">
                     <div class="leyre-progress-bar__fill leyre-progress-bar__fill--blanco" style="width:<?php echo $porcentaje; ?>%"></div>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
     </div>
 
