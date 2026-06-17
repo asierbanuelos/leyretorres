@@ -13,6 +13,25 @@ define( 'LEYRE_VERSION',     '1.0.0' );
 define( 'LEYRE_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'LEYRE_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 
+// ── Activación: crear directorio privado y limpiar rewrite rules ─────────────
+register_activation_hook( __FILE__, function() {
+    $dir = WP_CONTENT_DIR . '/uploads/leyre-privado';
+    if ( ! file_exists( $dir ) ) {
+        wp_mkdir_p( $dir );
+    }
+    if ( ! file_exists( $dir . '/.htaccess' ) ) {
+        file_put_contents( $dir . '/.htaccess', "deny from all\n" );
+    }
+    // Registrar CPTs y routing antes de flush para que las reglas sean correctas
+    leyre_registrar_cpts();
+    leyre_registrar_rewrites();
+    flush_rewrite_rules();
+});
+
+register_deactivation_hook( __FILE__, function() {
+    flush_rewrite_rules();
+});
+
 require_once LEYRE_PLUGIN_DIR . 'includes/access.php';
 require_once LEYRE_PLUGIN_DIR . 'includes/routing.php';
 require_once LEYRE_PLUGIN_DIR . 'includes/cpts.php';
@@ -47,6 +66,6 @@ add_action( 'wp_enqueue_scripts', function() {
 });
 
 function leyre_es_pagina_privada() {
-    $slugs = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'mi-perfil' ];
-    return is_page( $slugs );
+    $slugs = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'mi-perfil', 'acceso' ];
+    return is_page( $slugs ) || (bool) get_query_var( 'leyre_modulo_id' );
 }
