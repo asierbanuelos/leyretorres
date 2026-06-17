@@ -93,11 +93,18 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
         </section>
 
         <!-- Comunidad -->
+        <?php
+        $wa_url    = get_option( 'leyre_whatsapp_url' );
+        $img_id    = (int) get_option( 'leyre_comunidad_imagen_id', 0 );
+        $img_url   = $img_id ? wp_get_attachment_image_url( $img_id, 'large' ) : '';
+        $bg_style  = $img_url
+            ? "background:linear-gradient(rgba(26,26,26,.65),rgba(26,26,26,.65)),url('{$img_url}') center/cover no-repeat"
+            : 'background:var(--leyre-dark)';
+        ?>
         <section class="leyre-section">
-            <div style="background:var(--leyre-dark);border-radius:var(--leyre-radius);padding:40px 32px;text-align:center;color:var(--leyre-white)">
-                <h2 style="font-family:var(--leyre-font-title);font-style:italic;font-size:24px;margin:0 0 8px">No recorres este camino sola</h2>
-                <p style="color:rgba(255,255,255,.7);margin-bottom:24px">Únete a la comunidad y conecta con el resto de leonas.</p>
-                <?php $wa_url = get_option( 'leyre_whatsapp_url' ); ?>
+            <div class="leyre-comunidad-banner" style="<?php echo esc_attr( $bg_style ); ?>">
+                <h2 class="leyre-comunidad-banner__titulo">No recorres este camino sola</h2>
+                <p class="leyre-comunidad-banner__sub">Únete a la comunidad y conecta con el resto de leonas.</p>
                 <?php if ( $wa_url ) : ?>
                 <a href="<?php echo esc_url( $wa_url ); ?>" target="_blank" rel="noopener" class="leyre-btn leyre-btn--beige">Entrar a la comunidad</a>
                 <?php else : ?>

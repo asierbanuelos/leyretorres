@@ -595,3 +595,226 @@ body.leyre-area-privada #wpadminbar + header {
   color: var(--leyre-dark);
   margin: 0;
 }
+
+/* ── Semana 3: mis-sesiones ──────────────────────────────────────────────── */
+.leyre-sesiones-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .leyre-sesiones-grid { grid-template-columns: 1fr; }
+}
+
+.leyre-sesiones-col__titulo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--leyre-dark);
+  margin: 0 0 4px;
+}
+
+.leyre-sesiones-col__desc {
+  font-size: 13px;
+  color: var(--leyre-muted);
+  margin: 0 0 20px;
+}
+
+.leyre-sesiones-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leyre-sesion-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.leyre-sesion-item:last-child { border-bottom: none; }
+
+.leyre-sesion-item__numero {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: var(--leyre-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--leyre-beige);
+  flex-shrink: 0;
+}
+
+.leyre-sesion-item--completada .leyre-sesion-item__numero {
+  background: #4CAF50;
+  color: #fff;
+}
+
+.leyre-sesion-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.leyre-sesion-item__nombre {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--leyre-dark);
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leyre-sesion-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.leyre-sesion-badge--ok       { background: #E8F5E9; color: #4CAF50; }
+.leyre-sesion-badge--fecha    { background: #FFF8EF; color: var(--leyre-beige); }
+.leyre-sesion-badge--pendiente{ background: #f0f0f0; color: var(--leyre-muted); }
+
+.leyre-sesion-item__accion { flex-shrink: 0; }
+
+.leyre-sesion-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--leyre-beige);
+  text-decoration: none;
+}
+
+.leyre-sesion-link:hover { text-decoration: underline; }
+
+/* ── Semana 3: recursos ──────────────────────────────────────────────────── */
+.leyre-recursos-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.leyre-filtro-btn {
+  background: var(--leyre-white);
+  border: 2px solid #eee;
+  border-radius: 99px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--leyre-muted);
+  transition: all .2s;
+}
+
+.leyre-filtro-btn.active,
+.leyre-filtro-btn:hover {
+  border-color: var(--leyre-beige);
+  color: var(--leyre-beige);
+}
+
+.leyre-recursos-grupo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--leyre-dark);
+  margin: 28px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.leyre-btn--sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* ── Semana 3: comunidad banner ──────────────────────────────────────────── */
+.leyre-comunidad-banner {
+  border-radius: var(--leyre-radius);
+  padding: 60px 32px;
+  text-align: center;
+  color: var(--leyre-white);
+}
+
+.leyre-comunidad-banner__titulo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 28px;
+  margin: 0 0 10px;
+  color: var(--leyre-white);
+}
+
+.leyre-comunidad-banner__sub {
+  color: rgba(255,255,255,.8);
+  margin: 0 0 28px;
+  font-size: 15px;
+}
+
+/* ── Semana 3: página Sin acceso ─────────────────────────────────────────── */
+.leyre-acceso-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--leyre-bg);
+  padding: 24px;
+}
+
+.leyre-acceso-card {
+  background: var(--leyre-white);
+  border-radius: var(--leyre-radius);
+  padding: 48px 40px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+}
+
+.leyre-acceso-logo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  color: var(--leyre-beige);
+  font-size: 22px;
+  margin-bottom: 28px;
+}
+
+.leyre-acceso-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.leyre-acceso-title {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 24px;
+  color: var(--leyre-dark);
+  margin: 0 0 12px;
+}
+
+.leyre-acceso-desc {
+  color: var(--leyre-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+.leyre-acceso-footer {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--leyre-muted);
+}
+
+.leyre-acceso-footer a {
+  color: var(--leyre-beige);
+  text-decoration: none;
+  font-weight: 600;
+}

@@ -5,6 +5,12 @@ defined( 'ABSPATH' ) || exit;
 
 add_action( 'admin_menu', 'leyre_registrar_menu_admin' );
 
+add_action( 'admin_enqueue_scripts', function( $hook ) {
+    if ( strpos( $hook, 'leyre' ) === false ) return;
+    wp_enqueue_media();
+    wp_enqueue_script( 'jquery' );
+});
+
 function leyre_registrar_menu_admin() {
     add_menu_page(
         'Leyre Torres',
@@ -85,16 +91,18 @@ add_action( 'admin_init', 'leyre_registrar_settings' );
 function leyre_registrar_settings() {
     register_setting( 'leyre_options', 'leyre_duracion_programa',  [ 'type' => 'integer', 'default' => 90 ] );
     register_setting( 'leyre_options', 'leyre_producto_id',        [ 'type' => 'integer', 'default' => 0 ] );
-    register_setting( 'leyre_options', 'leyre_calendly_api_key',   [ 'type' => 'string',  'default' => '' ] );
-    register_setting( 'leyre_options', 'leyre_whatsapp_url',       [ 'type' => 'string',  'default' => '' ] );
+    register_setting( 'leyre_options', 'leyre_calendly_api_key',     [ 'type' => 'string',  'default' => '' ] );
+    register_setting( 'leyre_options', 'leyre_whatsapp_url',         [ 'type' => 'string',  'default' => '' ] );
+    register_setting( 'leyre_options', 'leyre_comunidad_imagen_id',  [ 'type' => 'integer', 'default' => 0 ] );
 }
 
 function leyre_pagina_configuracion() {
     if ( isset( $_POST['leyre_guardar'] ) && check_admin_referer( 'leyre_save_config' ) ) {
-        update_option( 'leyre_duracion_programa', absint( $_POST['leyre_duracion_programa'] ?? 90 ) );
-        update_option( 'leyre_producto_id',       absint( $_POST['leyre_producto_id']       ?? 0 ) );
-        update_option( 'leyre_calendly_api_key',  sanitize_text_field( $_POST['leyre_calendly_api_key'] ?? '' ) );
-        update_option( 'leyre_whatsapp_url',      esc_url_raw( $_POST['leyre_whatsapp_url'] ?? '' ) );
+        update_option( 'leyre_duracion_programa',    absint( $_POST['leyre_duracion_programa']    ?? 90 ) );
+        update_option( 'leyre_producto_id',          absint( $_POST['leyre_producto_id']          ?? 0 ) );
+        update_option( 'leyre_calendly_api_key',     sanitize_text_field( $_POST['leyre_calendly_api_key'] ?? '' ) );
+        update_option( 'leyre_whatsapp_url',         esc_url_raw( $_POST['leyre_whatsapp_url']    ?? '' ) );
+        update_option( 'leyre_comunidad_imagen_id',  absint( $_POST['leyre_comunidad_imagen_id']  ?? 0 ) );
         echo '<div class="notice notice-success is-dismissible"><p>Configuración guardada.</p></div>';
     }
     ?>
@@ -136,6 +144,50 @@ function leyre_pagina_configuracion() {
                         <input type="url" name="leyre_whatsapp_url" id="leyre_whatsapp_url"
                                value="<?php echo esc_attr( get_option( 'leyre_whatsapp_url', '' ) ); ?>"
                                class="regular-text" placeholder="https://chat.whatsapp.com/...">
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="leyre_comunidad_imagen_id">Imagen de fondo — sección comunidad</label></th>
+                    <td>
+                        <?php
+                        $img_id  = (int) get_option( 'leyre_comunidad_imagen_id', 0 );
+                        $img_url = $img_id ? wp_get_attachment_image_url( $img_id, 'medium' ) : '';
+                        ?>
+                        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                            <?php if ( $img_url ) : ?>
+                            <img src="<?php echo esc_url( $img_url ); ?>" style="height:80px;border-radius:4px;object-fit:cover" id="leyre-comunidad-preview">
+                            <?php else : ?>
+                            <img src="" style="height:80px;display:none;border-radius:4px;object-fit:cover" id="leyre-comunidad-preview">
+                            <?php endif; ?>
+                            <div>
+                                <input type="hidden" name="leyre_comunidad_imagen_id" id="leyre_comunidad_imagen_id" value="<?php echo $img_id; ?>">
+                                <button type="button" class="button" id="leyre-seleccionar-imagen">Seleccionar imagen</button>
+                                <?php if ( $img_id ) : ?>
+                                <button type="button" class="button" id="leyre-quitar-imagen" style="margin-left:8px">Quitar</button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <p class="description">Se muestra como fondo en el banner de comunidad del área privada.</p>
+                        <script>
+                        jQuery(function($) {
+                            var frame;
+                            $('#leyre-seleccionar-imagen').on('click', function(e) {
+                                e.preventDefault();
+                                if (frame) { frame.open(); return; }
+                                frame = wp.media({ title: 'Imagen comunidad', button: { text: 'Usar esta imagen' }, multiple: false });
+                                frame.on('select', function() {
+                                    var att = frame.state().get('selection').first().toJSON();
+                                    $('#leyre_comunidad_imagen_id').val(att.id);
+                                    $('#leyre-comunidad-preview').attr('src', att.url).show();
+                                });
+                                frame.open();
+                            });
+                            $('#leyre-quitar-imagen').on('click', function() {
+                                $('#leyre_comunidad_imagen_id').val('');
+                                $('#leyre-comunidad-preview').hide();
+                            });
+                        });
+                        </script>
                     </td>
                 </tr>
             </table>
