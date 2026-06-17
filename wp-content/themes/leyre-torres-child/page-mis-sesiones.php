@@ -21,11 +21,17 @@ $user_id = get_current_user_id();
 <?php get_template_part( 'templates/navbar' ); ?>
 
 <main class="leyre-main">
-    <div class="leyre-container">
 
-        <div class="leyre-page-header">
-            <h1 class="leyre-page-title">Mis sesiones</h1>
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+    <div class="leyre-hero leyre-hero--sm">
+        <div class="leyre-hero__inner">
+            <div class="leyre-section__kicker">Mis sesiones</div>
+            <h1 class="leyre-hero__saludo">Tu acompañamiento</h1>
+            <p class="leyre-hero__sub">Sesiones 1:1 y grupales con Leyre</p>
         </div>
+    </div>
+
+    <div class="leyre-container">
 
         <!-- ── Próxima sesión ──────────────────────────────────────────── -->
         <div id="leyre-proxima-wrap">

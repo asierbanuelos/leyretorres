@@ -22,19 +22,19 @@ $progreso = leyre_get_progreso_global( $user_id );
 <?php get_template_part( 'templates/navbar' ); ?>
 
 <main class="leyre-main">
-    <div class="leyre-container">
 
-        <!-- Cabecera -->
-        <div class="leyre-page-header">
-            <h1 class="leyre-page-title">Mis cursos</h1>
-            <div class="leyre-progreso-resumen">
-                <span><?php echo $progreso['completadas']; ?> de <?php echo $progreso['total']; ?> lecciones completadas</span>
-                <div class="leyre-progress-bar leyre-progress-bar--sm">
-                    <div class="leyre-progress-bar__fill" style="width:<?php echo $progreso['porcentaje']; ?>%;background:var(--leyre-beige)"></div>
-                </div>
-                <strong><?php echo $progreso['porcentaje']; ?>%</strong>
-            </div>
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+    <div class="leyre-hero leyre-hero--sm">
+        <div class="leyre-hero__inner">
+            <div class="leyre-section__kicker">Mis cursos</div>
+            <h1 class="leyre-hero__saludo">Tu formación</h1>
+            <p class="leyre-hero__sub">
+                <?php echo $progreso['completadas']; ?> de <?php echo $progreso['total']; ?> lecciones completadas &middot; <?php echo $progreso['porcentaje']; ?>%
+            </p>
         </div>
+    </div>
+
+    <div class="leyre-container">
 
         <!-- Grid de módulos -->
         <div class="leyre-grid-modulos leyre-grid-modulos--full" id="leyre-grid-modulos-full">

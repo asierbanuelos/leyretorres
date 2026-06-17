@@ -267,6 +267,19 @@ body.leyre-area-privada #wpadminbar + header {
 /* ── Contenido tras el hero ─────────────────────────────────────────────── */
 .leyre-container { padding-top: 48px; }
 
+/* Hero compacto para páginas interiores */
+.leyre-hero--sm {
+  padding: 36px 0 32px;
+}
+
+.leyre-hero--sm .leyre-hero__saludo {
+  font-size: 30px;
+}
+
+.leyre-hero--sm .leyre-hero__inner {
+  gap: 8px;
+}
+
 /* ── Cards / secciones ──────────────────────────────────────────────────── */
 .leyre-section {
   margin-bottom: 52px;

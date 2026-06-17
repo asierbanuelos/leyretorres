@@ -18,12 +18,17 @@ defined( 'ABSPATH' ) || exit;
 <?php get_template_part( 'templates/navbar' ); ?>
 
 <main class="leyre-main">
-    <div class="leyre-container">
 
-        <div class="leyre-page-header">
-            <h1 class="leyre-page-title">Recursos</h1>
-            <p style="color:var(--leyre-muted);margin:0;font-size:14px">Todos tus materiales descargables del programa.</p>
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+    <div class="leyre-hero leyre-hero--sm">
+        <div class="leyre-hero__inner">
+            <div class="leyre-section__kicker">Recursos</div>
+            <h1 class="leyre-hero__saludo">Tus materiales</h1>
+            <p class="leyre-hero__sub">Todos tus materiales descargables del programa</p>
         </div>
+    </div>
+
+    <div class="leyre-container">
 
         <!-- Filtro por módulo -->
         <div class="leyre-recursos-filtros" id="leyre-recursos-filtros" style="display:none">
