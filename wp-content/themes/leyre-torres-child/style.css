@@ -1400,19 +1400,24 @@ body.leyre-area-privada .elementor-location-footer {
 }
 
 .leyre-recurso-card__icono {
-  width: 52px;
-  height: 60px;
-  min-width: 52px;
+  width: 56px;
+  height: 64px;
+  min-width: 56px;
+  max-width: 56px;
   border-radius: var(--r-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .leyre-recurso-card__icono svg {
-  width: 32px;
-  height: 38px;
+  width: 32px !important;
+  height: 38px !important;
+  max-width: 32px;
+  max-height: 38px;
+  flex-shrink: 0;
 }
 
 .leyre-recurso-card__info {
