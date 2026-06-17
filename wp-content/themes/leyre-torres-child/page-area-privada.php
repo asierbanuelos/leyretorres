@@ -141,7 +141,7 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
         if (!sesion) {
             el.innerHTML = `<div class="leyre-card-sesion">
                 <div class="leyre-card-sesion__icono-wrap">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
                 </div>
                 <div class="leyre-card-sesion__info">
                     <p class="leyre-card-sesion__tipo">Próxima sesión · 1:1 con Leyre</p>
@@ -156,7 +156,7 @@ $porcentaje = $duracion > 0 ? min( 100, round( ( $dia / $duracion ) * 100 ) ) : 
         });
         el.innerHTML = `<div class="leyre-card-sesion">
             <div class="leyre-card-sesion__icono-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
             </div>
             <div class="leyre-card-sesion__info">
                 <p class="leyre-card-sesion__tipo">Próxima sesión · 1:1 con Leyre</p>

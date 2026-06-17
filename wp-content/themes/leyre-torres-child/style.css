@@ -33,7 +33,9 @@ body.leyre-area-privada {
 
 body.leyre-area-privada .site-header,
 body.leyre-area-privada .site-footer,
-body.leyre-area-privada #wpadminbar + header {
+body.leyre-area-privada #site-header,
+body.leyre-area-privada .elementor-location-header,
+body.leyre-area-privada header {
   display: none !important;
 }
 
@@ -345,12 +347,14 @@ body.leyre-area-privada #wpadminbar + header {
   width: 52px;
   height: 52px;
   min-width: 52px;
+  max-width: 52px;
   background: rgba(255,255,255,.08);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .leyre-card-sesion__icono-wrap svg {
