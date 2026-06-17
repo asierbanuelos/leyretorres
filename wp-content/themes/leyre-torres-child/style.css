@@ -1,0 +1,362 @@
+/*
+Theme Name:   Leyre Torres Child
+Description:  Child theme for Leyre Torres — Leonas en Tacones
+Template:     hello-elementor
+Version:      1.0.0
+Author:       Asier Bañuelos
+Text Domain:  leyre-torres-child
+*/
+
+/* ── Tokens de diseño ──────────────────────────────────────────────────── */
+:root {
+  --leyre-beige:        #C5A882;
+  --leyre-bg:           #F5F0EA;
+  --leyre-dark:         #1A1A1A;
+  --leyre-text:         #333333;
+  --leyre-muted:        #888888;
+  --leyre-white:        #FFFFFF;
+  --leyre-success:      #4CAF50;
+  --leyre-radius:       8px;
+  --leyre-font-title:   'Playfair Display', Georgia, serif;
+  --leyre-font-body:    'Inter', Arial, sans-serif;
+}
+
+/* ── Reset base área privada ────────────────────────────────────────────── */
+body.leyre-area-privada {
+  background: var(--leyre-bg);
+  font-family: var(--leyre-font-body);
+  color: var(--leyre-text);
+  margin: 0;
+}
+
+body.leyre-area-privada .site-header,
+body.leyre-area-privada .site-footer,
+body.leyre-area-privada #wpadminbar + header {
+  display: none !important;
+}
+
+/* ── Navbar interna ─────────────────────────────────────────────────────── */
+.leyre-navbar {
+  background: var(--leyre-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.leyre-navbar__logo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  color: var(--leyre-beige);
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.leyre-navbar__nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+}
+
+.leyre-navbar__nav a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: color .2s, background .2s;
+}
+
+.leyre-navbar__nav a:hover,
+.leyre-navbar__nav a.active {
+  color: var(--leyre-white);
+  background: rgba(255,255,255,0.08);
+}
+
+.leyre-navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+}
+
+.leyre-navbar__user a {
+  color: var(--leyre-beige);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+/* Hamburguesa (mobile) */
+.leyre-navbar__toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.leyre-navbar__toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--leyre-white);
+  margin: 4px 0;
+  transition: .3s;
+}
+
+@media (max-width: 768px) {
+  .leyre-navbar__toggle { display: block; }
+  .leyre-navbar__nav {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: var(--leyre-dark);
+    flex-direction: column;
+    padding: 12px 0;
+    gap: 0;
+  }
+  .leyre-navbar__nav.open { display: flex; }
+  .leyre-navbar__nav a { padding: 12px 24px; border-radius: 0; }
+  .leyre-navbar__user { display: none; }
+}
+
+/* ── Layout principal ───────────────────────────────────────────────────── */
+.leyre-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.leyre-main {
+  padding: 40px 0 80px;
+}
+
+/* ── Hero / progreso ────────────────────────────────────────────────────── */
+.leyre-hero {
+  background: var(--leyre-beige);
+  padding: 40px 32px;
+  border-radius: var(--leyre-radius);
+  margin-bottom: 40px;
+}
+
+.leyre-hero__saludo {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 32px;
+  color: var(--leyre-white);
+  margin: 0 0 4px;
+}
+
+.leyre-hero__sub {
+  color: rgba(255,255,255,0.85);
+  font-size: 15px;
+  margin: 0 0 24px;
+}
+
+.leyre-progress-bar {
+  background: rgba(255,255,255,0.3);
+  border-radius: 99px;
+  height: 10px;
+  margin-top: 8px;
+}
+
+.leyre-progress-bar__fill {
+  background: var(--leyre-white);
+  border-radius: 99px;
+  height: 100%;
+  transition: width .5s ease;
+}
+
+.leyre-progress-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  margin-top: 6px;
+}
+
+/* ── Cards / secciones ──────────────────────────────────────────────────── */
+.leyre-section {
+  margin-bottom: 48px;
+}
+
+.leyre-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.leyre-section__title {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--leyre-dark);
+  margin: 0;
+}
+
+.leyre-section__link {
+  font-size: 13px;
+  color: var(--leyre-beige);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Card próxima sesión */
+.leyre-card-sesion {
+  background: var(--leyre-dark);
+  color: var(--leyre-white);
+  border-radius: var(--leyre-radius);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.leyre-card-sesion__tipo {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--leyre-beige);
+  margin-bottom: 8px;
+}
+
+.leyre-card-sesion__titulo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.leyre-card-sesion__fecha {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Grid módulos */
+.leyre-grid-modulos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) { .leyre-grid-modulos { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .leyre-grid-modulos { grid-template-columns: 1fr; } }
+
+.leyre-card-modulo {
+  background: var(--leyre-white);
+  border-radius: var(--leyre-radius);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.leyre-card-modulo:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+.leyre-card-modulo__thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: var(--leyre-beige);
+  overflow: hidden;
+}
+
+.leyre-card-modulo__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.leyre-card-modulo__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.25);
+}
+
+.leyre-card-modulo__play svg { width: 40px; height: 40px; fill: var(--leyre-white); opacity: .9; }
+
+.leyre-card-modulo__body { padding: 16px; }
+
+.leyre-card-modulo__etiqueta {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--leyre-beige);
+  margin-bottom: 4px;
+}
+
+.leyre-card-modulo__titulo {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  color: var(--leyre-dark);
+}
+
+.leyre-card-modulo__estado {
+  font-size: 12px;
+  color: var(--leyre-muted);
+  margin-bottom: 6px;
+}
+
+.leyre-card-modulo--locked { opacity: .5; cursor: not-allowed; }
+.leyre-card-modulo--locked:hover { transform: none; box-shadow: none; }
+
+/* ── Botones ────────────────────────────────────────────────────────────── */
+.leyre-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: opacity .2s;
+}
+
+.leyre-btn:hover { opacity: .85; }
+.leyre-btn--primary  { background: var(--leyre-dark);  color: var(--leyre-white); }
+.leyre-btn--beige    { background: var(--leyre-beige); color: var(--leyre-white); }
+.leyre-btn--outline  { background: transparent; border: 2px solid var(--leyre-dark); color: var(--leyre-dark); }
+.leyre-btn--disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+
+/* ── Skeleton loader ────────────────────────────────────────────────────── */
+.leyre-skeleton {
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: leyre-shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+@keyframes leyre-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Sin acceso ─────────────────────────────────────────────────────────── */
+.leyre-sin-acceso {
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.leyre-sin-acceso h2 {
+  font-family: var(--leyre-font-title);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--leyre-dark);
+  margin-bottom: 12px;
+}
+
+.leyre-sin-acceso p { color: var(--leyre-muted); margin-bottom: 28px; }

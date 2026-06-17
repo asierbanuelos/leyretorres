@@ -1,0 +1,96 @@
+/* Importado como complemento al style.css del child theme */
+/* Aquí van estilos específicos de interacciones dinámicas */
+
+.leyre-leccion-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.leyre-leccion-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.leyre-leccion-item:last-child { border-bottom: none; }
+
+.leyre-leccion-item__estado {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: #888;
+}
+
+.leyre-leccion-item--completada .leyre-leccion-item__estado {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: #fff;
+}
+
+.leyre-leccion-item--actual .leyre-leccion-item__estado {
+    border-color: #C5A882;
+    color: #C5A882;
+}
+
+.leyre-leccion-item--bloqueada { opacity: .45; cursor: not-allowed; }
+
+.leyre-leccion-item__info { flex: 1; }
+.leyre-leccion-item__titulo { font-weight: 600; font-size: 14px; color: #1A1A1A; }
+.leyre-leccion-item__duracion { font-size: 12px; color: #888; margin-top: 2px; }
+
+/* Player Vimeo */
+.leyre-player-wrap {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.leyre-player-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Recursos */
+.leyre-recurso-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.leyre-recurso-item__icon {
+    width: 40px;
+    height: 40px;
+    background: #F5F0EA;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+}
+
+.leyre-recurso-item__info { flex: 1; }
+.leyre-recurso-item__titulo { font-weight: 600; font-size: 14px; color: #1A1A1A; }
+.leyre-recurso-item__meta { font-size: 12px; color: #888; margin-top: 2px; }
