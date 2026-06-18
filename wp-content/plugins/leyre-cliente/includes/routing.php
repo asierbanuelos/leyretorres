@@ -18,6 +18,12 @@ function leyre_registrar_rewrites() {
         'index.php?leyre_page=audios',
         'top'
     );
+    // /login/ — login corporativo sin necesitar página WP
+    add_rewrite_rule(
+        '^login/?$',
+        'index.php?leyre_page=login',
+        'top'
+    );
 }
 
 add_filter( 'query_vars', function( $vars ) {
@@ -28,11 +34,28 @@ add_filter( 'query_vars', function( $vars ) {
 
 // Auto-flush rewrite rules cuando se actualiza el routing
 add_action( 'init', function() {
-    if ( get_option( 'leyre_routing_ver' ) !== '1.3' ) {
+    if ( get_option( 'leyre_routing_ver' ) !== '1.4' ) {
         flush_rewrite_rules();
-        update_option( 'leyre_routing_ver', '1.3' );
+        update_option( 'leyre_routing_ver', '1.4' );
     }
 }, 999 );
+
+// Filtrar wp_login_url() para que apunte al login corporativo
+add_filter( 'login_url', function( $url, $redirect, $force_reauth ) {
+    $custom = home_url( '/login/' );
+    if ( $redirect ) $custom = add_query_arg( 'redirect_to', urlencode( $redirect ), $custom );
+    return $custom;
+}, 10, 3 );
+
+// Redirigir wp-login.php (GET) al login corporativo
+add_action( 'login_init', function() {
+    $action = $_REQUEST['action'] ?? 'login';
+    if ( ! in_array( $action, [ 'login', '' ], true ) ) return;
+    if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) return;
+    $redirect = $_GET['redirect_to'] ?? home_url( '/area-privada/' );
+    wp_redirect( home_url( '/login/?redirect_to=' . urlencode( $redirect ) ) );
+    exit;
+} );
 
 // ── /comprar/ — añade el programa al carrito y redirige a checkout ────────────
 add_action( 'wp_loaded', function() {
@@ -46,6 +69,13 @@ add_action( 'wp_loaded', function() {
     WC()->cart->add_to_cart( $producto_id );
     wp_redirect( wc_get_checkout_url() );
     exit;
+} );
+
+// Template para /login/
+add_filter( 'template_include', function( $template ) {
+    if ( get_query_var( 'leyre_page' ) !== 'login' ) return $template;
+    $custom = get_stylesheet_directory() . '/page-login.php';
+    return file_exists( $custom ) ? $custom : $template;
 } );
 
 // Template para /audios/
