@@ -184,8 +184,8 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
                 <p class="leyre-card-sesion__fecha">${fecha} (CET)</p>
             </div>
             ${sesion.enlace_reunion
-                ? `<a href="${sesion.enlace_reunion}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--pill">Unirse a la sesión</a>`
-                : `<span class="leyre-btn leyre-btn--pill leyre-btn--disabled">Enlace próximamente</span>`
+                ? `<a href="${sesion.enlace_reunion}" target="_blank" rel="noopener" class="leyre-btn leyre-btn--beige leyre-btn--sm">Unirse a la sesión</a>`
+                : `<span class="leyre-btn leyre-btn--outline leyre-btn--sm leyre-btn--disabled">Enlace próximamente</span>`
             }
         </div>`;
     }

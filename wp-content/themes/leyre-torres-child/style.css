@@ -614,23 +614,24 @@ body.leyre-area-privada .elementor-location-footer {
    CARD SESIÓN (dashboard + mis-sesiones)
    ───────────────────────────────────────────────────────────────────────── */
 .leyre-card-sesion {
-  background: var(--c-dark);
-  color: #fff;
-  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  border-radius: var(--r-lg);
   padding: var(--sp-3) var(--sp-4);
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  border: 1px solid rgba(255,255,255,.06);
+  border: 1px solid var(--c-border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .leyre-card-sesion__icono-wrap {
-  width: 54px;
-  height: 54px;
-  min-width: 54px;
-  max-width: 54px;
-  background: rgba(197,168,130,.15);
-  border: 1px solid rgba(197,168,130,.25);
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  background: var(--c-brand-bg);
+  border: 1px solid var(--c-brand-pale);
   border-radius: var(--r-md);
   display: flex;
   align-items: center;
@@ -640,10 +641,10 @@ body.leyre-area-privada .elementor-location-footer {
 }
 
 .leyre-card-sesion__icono-wrap svg {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
-  stroke: var(--c-brand);
+  stroke: var(--c-brand-deep);
 }
 
 .leyre-card-sesion__info {
@@ -656,22 +657,22 @@ body.leyre-area-privada .elementor-location-footer {
   font-weight: 700;
   letter-spacing: .10em;
   text-transform: uppercase;
-  color: var(--c-brand);
-  margin: 0 0 6px;
+  color: var(--c-brand-deep);
+  margin: 0 0 4px;
 }
 
 .leyre-card-sesion__titulo {
   font-size: var(--text-xl);
   font-weight: 600;
-  margin: 0 0 4px;
+  margin: 0 0 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
+  color: var(--c-dark);
 }
 
 .leyre-card-sesion__fecha {
-  color: rgba(255,255,255,.48);
+  color: var(--c-muted);
   font-size: var(--text-md);
   margin: 0;
   font-weight: 400;
