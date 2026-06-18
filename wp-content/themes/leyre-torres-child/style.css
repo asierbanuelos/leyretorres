@@ -97,7 +97,7 @@ Text Domain:  leyre-torres-child
 
   /* ── Layout ── */
   --navbar-h:      64px;
-  --container-w: 1200px;
+  --container-w: 1600px;
   --container-p:   32px;
 
   --leyre-navbar-h: var(--navbar-h);
