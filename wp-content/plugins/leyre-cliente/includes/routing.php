@@ -35,9 +35,9 @@ add_action( 'init', function() {
 }, 999 );
 
 // ── /comprar/ — añade el programa al carrito y redirige a checkout ────────────
-add_action( 'init', function() {
+add_action( 'wp_loaded', function() {
     if ( ! isset( $_GET['leyre_comprar'] ) ) return;
-    if ( ! function_exists( 'WC' ) ) return;
+    if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
 
     $producto_id = (int) get_option( 'leyre_producto_id', 0 );
     if ( ! $producto_id ) return;
@@ -46,7 +46,7 @@ add_action( 'init', function() {
     WC()->cart->add_to_cart( $producto_id );
     wp_redirect( wc_get_checkout_url() );
     exit;
-}, 20 );
+} );
 
 // Template para /audios/
 add_filter( 'template_include', function( $template ) {
