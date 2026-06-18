@@ -115,6 +115,33 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
             </div>
         </section>
 
+        <!-- ── Audios ────────────────────────────────────────────────────── -->
+        <section class="leyre-section">
+            <div class="leyre-section__kicker">Audios</div>
+            <div class="leyre-section__header">
+                <h2 class="leyre-section__title--xl">Biblioteca de audios</h2>
+                <a href="<?php echo home_url( '/audios/' ); ?>" class="leyre-section__link">Ver todos →</a>
+            </div>
+            <div class="leyre-recursos-list" id="leyre-audios-dashboard">
+                <?php for ( $i = 0; $i < 3; $i++ ) : ?>
+                <div class="leyre-audio-row">
+                    <div class="leyre-audio-row__header">
+                        <div class="leyre-audio-row__icono">
+                            <div class="leyre-skeleton" style="width:18px;height:18px;border-radius:50%"></div>
+                        </div>
+                        <div class="leyre-audio-row__info">
+                            <div class="leyre-skeleton" style="height:14px;width:40%;margin-bottom:8px"></div>
+                            <div class="leyre-skeleton" style="height:11px;width:60%"></div>
+                        </div>
+                    </div>
+                    <div class="leyre-audio-row__player">
+                        <div class="leyre-skeleton" style="height:36px;width:100%;border-radius:18px"></div>
+                    </div>
+                </div>
+                <?php endfor; ?>
+            </div>
+        </section>
+
         <!-- ── Comunidad ──────────────────────────────────────────────────── -->
         <?php
         $wa_url   = get_option( 'leyre_whatsapp_url' );
@@ -153,6 +180,10 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
 
     leyreAPI.get('recursos').then(function (recursos) {
         renderRecursosDashboard(recursos.slice(0, 4));
+    }).catch(function () {});
+
+    leyreAPI.get('audios').then(function (audios) {
+        renderAudiosDashboard(audios.slice(0, 3));
     }).catch(function () {});
 
     function renderProximaSesion(sesion) {
@@ -225,6 +256,38 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
                     '<span>Descargar</span>' +
                     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>' +
                 '</a>' +
+            '</div>';
+        }).join('');
+    }
+
+    function renderAudiosDashboard(audios) {
+        var list = document.getElementById('leyre-audios-dashboard');
+        if (!audios.length) {
+            list.innerHTML = '<p style="color:var(--c-muted,#8A8080);font-size:14px;padding:8px 0">Los audios se añadirán próximamente.</p>';
+            return;
+        }
+        list.innerHTML = audios.map(function(a) {
+            var meta = a.categoria || '';
+            if (a.duracion) meta += (meta ? ' · ' : '') + a.duracion;
+            return '<div class="leyre-audio-row">' +
+                '<div class="leyre-audio-row__header">' +
+                    '<div class="leyre-audio-row__icono">' +
+                        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+                            '<circle cx="12" cy="12" r="10"/>' +
+                            '<polygon points="10 8 16 12 10 16 10 8"/>' +
+                        '</svg>' +
+                    '</div>' +
+                    '<div class="leyre-audio-row__info">' +
+                        '<p class="leyre-audio-row__titulo">' + a.titulo + '</p>' +
+                        (a.descripcion ? '<p class="leyre-audio-row__desc">' + a.descripcion + '</p>' : '') +
+                        (meta ? '<p class="leyre-audio-row__meta">' + meta + '</p>' : '') +
+                    '</div>' +
+                    (a.duracion ? '<span class="leyre-audio-row__duracion">' + a.duracion + '</span>' : '') +
+                '</div>' +
+                (a.url
+                    ? '<div class="leyre-audio-row__player"><audio controls src="' + a.url + '" preload="none" style="width:100%"></audio></div>'
+                    : '<p class="leyre-audio-row__sin-archivo">Audio no disponible aún.</p>'
+                ) +
             '</div>';
         }).join('');
     }
