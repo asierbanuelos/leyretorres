@@ -1492,6 +1492,153 @@ body.leyre-area-privada .elementor-location-footer {
   flex-shrink: 0;
 }
 
+/* ── Page Header plano (sin gradiente) ─── */
+.leyre-page-header {
+  padding: var(--sp-6) 0 var(--sp-4);
+}
+
+.leyre-page-header__kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--sp-2);
+}
+
+.leyre-page-header__kicker-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  background: var(--c-border-light);
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+}
+
+.leyre-page-header__kicker-nombre {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-brand-deep);
+  background: var(--c-brand-bg);
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+}
+
+.leyre-page-header__titulo {
+  font-family: var(--font-title);
+  font-size: var(--text-6xl);
+  font-weight: 700;
+  color: var(--c-dark);
+  line-height: 1.1;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .leyre-page-header__titulo { font-size: var(--text-4xl); }
+}
+
+/* ── Lista de recursos (página /recursos/) ── */
+.leyre-recursos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leyre-recurso-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-light);
+  border-radius: var(--r-lg);
+  padding: 18px var(--sp-4);
+  transition: box-shadow .2s, border-color .2s;
+}
+
+.leyre-recurso-row:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--c-border);
+}
+
+.leyre-recurso-row__icono {
+  width: 38px;
+  height: 42px;
+  min-width: 38px;
+  border-radius: var(--r-sm);
+  background: var(--c-brand-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.leyre-recurso-row__icono svg {
+  width: 18px !important;
+  height: 22px !important;
+  flex-shrink: 0;
+  color: var(--c-muted);
+}
+
+.leyre-recurso-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.leyre-recurso-row__titulo {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--c-dark);
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.leyre-recurso-row__meta {
+  font-size: var(--text-sm);
+  color: var(--c-muted);
+  margin: 0;
+}
+
+.leyre-recurso-row__btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--c-dark);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color .15s;
+}
+
+.leyre-recurso-row__btn:hover {
+  color: var(--c-brand-deep);
+}
+
+.leyre-recurso-row__btn svg {
+  flex-shrink: 0;
+}
+
+.leyre-recurso-row__grupo {
+  font-family: var(--font-title);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-2xl);
+  color: var(--c-dark);
+  margin: var(--sp-3) 0 var(--sp-2);
+  padding-bottom: var(--sp-1);
+  border-bottom: 1px solid var(--c-border-light);
+}
+
+@media (max-width: 600px) {
+  .leyre-recurso-row { gap: var(--sp-2); padding: 14px var(--sp-2); }
+  .leyre-recurso-row__btn span { display: none; }
+}
+
 /* Estado vacío general */
 .leyre-empty-state {
   text-align: center;

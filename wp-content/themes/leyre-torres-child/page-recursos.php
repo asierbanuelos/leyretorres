@@ -3,6 +3,8 @@
  * Template Name: Área Privada — Recursos
  */
 defined( 'ABSPATH' ) || exit;
+
+$user = wp_get_current_user();
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -19,16 +21,18 @@ defined( 'ABSPATH' ) || exit;
 
 <main class="leyre-main">
 
-    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
-    <div class="leyre-hero leyre-hero--sm">
-        <div class="leyre-hero__inner">
-            <div class="leyre-section__kicker">Recursos</div>
-            <h1 class="leyre-hero__saludo">Tus materiales</h1>
-            <p class="leyre-hero__sub">Todos los documentos y plantillas de tu programa</p>
+    <!-- ── Page Header ──────────────────────────────────────────────────────── -->
+    <div class="leyre-page-header">
+        <div class="leyre-container">
+            <div class="leyre-page-header__kicker">
+                <span class="leyre-page-header__kicker-label">Recursos</span>
+                <span class="leyre-page-header__kicker-nombre"><?php echo esc_html( $user->display_name ); ?></span>
+            </div>
+            <h1 class="leyre-page-header__titulo">Materiales descargables</h1>
         </div>
     </div>
 
-    <div class="leyre-container">
+    <div class="leyre-container" style="padding-top:var(--sp-2)">
 
         <!-- Filtros por módulo -->
         <div class="leyre-recursos-filtros" id="leyre-recursos-filtros" style="display:none">
@@ -36,21 +40,18 @@ defined( 'ABSPATH' ) || exit;
                     onclick="leyreFiltrarRecursos(this,'todos')">Todos</button>
         </div>
 
-        <!-- Grid de recursos -->
-        <div class="leyre-recursos-grid" id="leyre-recursos-wrap">
+        <!-- Lista de recursos -->
+        <div class="leyre-recursos-list" id="leyre-recursos-wrap">
             <?php for ( $i = 0; $i < 4; $i++ ) : ?>
-            <div class="leyre-recurso-card leyre-recurso-card--skeleton">
-                <div class="leyre-recurso-card__icono">
-                    <div class="leyre-skeleton" style="width:28px;height:34px;border-radius:4px"></div>
+            <div class="leyre-recurso-row">
+                <div class="leyre-recurso-row__icono">
+                    <div class="leyre-skeleton" style="width:18px;height:22px;border-radius:3px"></div>
                 </div>
-                <div class="leyre-recurso-card__info">
-                    <div class="leyre-skeleton" style="height:11px;width:80px;margin-bottom:10px"></div>
-                    <div class="leyre-skeleton" style="height:16px;width:70%;margin-bottom:6px"></div>
-                    <div class="leyre-skeleton" style="height:11px;width:50%"></div>
+                <div class="leyre-recurso-row__info">
+                    <div class="leyre-skeleton" style="height:14px;width:48%;margin-bottom:8px"></div>
+                    <div class="leyre-skeleton" style="height:11px;width:28%"></div>
                 </div>
-                <div class="leyre-recurso-card__accion">
-                    <div class="leyre-skeleton" style="height:40px;width:120px;border-radius:8px"></div>
-                </div>
+                <div class="leyre-skeleton" style="height:11px;width:80px;margin-left:auto"></div>
             </div>
             <?php endfor; ?>
         </div>
@@ -80,7 +81,6 @@ defined( 'ABSPATH' ) || exit;
 (function () {
 
     var todosRecursos = [];
-    var moduloActivo  = 'todos';
 
     leyreAPI.get('recursos').then(function (recursos) {
         todosRecursos = recursos;
@@ -92,7 +92,7 @@ defined( 'ABSPATH' ) || exit;
             return;
         }
 
-        // Construir filtros por módulo
+        // Filtros por módulo (solo si hay más de uno)
         var modulos = {};
         recursos.forEach(function (r) {
             if (r.modulo_id && !modulos[r.modulo_id]) {
@@ -103,7 +103,7 @@ defined( 'ABSPATH' ) || exit;
         var filtrosEl = document.getElementById('leyre-recursos-filtros');
         if (Object.keys(modulos).length > 1) {
             filtrosEl.style.display = 'flex';
-            filtrosEl.style.marginBottom = '32px';
+            filtrosEl.style.marginBottom = '24px';
             Object.entries(modulos).forEach(function (entry) {
                 var id = entry[0], nombre = entry[1];
                 var btn = document.createElement('button');
@@ -118,48 +118,23 @@ defined( 'ABSPATH' ) || exit;
         renderRecursos(recursos);
     }).catch(function () {
         document.getElementById('leyre-recursos-wrap').innerHTML =
-            '<p style="color:var(--c-muted,#8A8080);text-align:center;padding:60px 0;grid-column:1/-1">No se pudieron cargar los recursos. Recarga la página.</p>';
+            '<p style="color:var(--c-muted,#8A8080);padding:60px 0;text-align:center">No se pudieron cargar los recursos. Recarga la página.</p>';
     });
 
     window.leyreFiltrarRecursos = function (btn, modulo) {
         document.querySelectorAll('.leyre-filtro-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        moduloActivo = modulo;
         var filtrados = modulo === 'todos'
             ? todosRecursos
             : todosRecursos.filter(function(r) { return String(r.modulo_id) === String(modulo); });
         renderRecursos(filtrados);
     };
 
-    function tipoConfig(tipo) {
-        var configs = {
-            pdf: {
-                color: '#B23A2F',
-                bg:    '#FDF2F1',
-                label: 'PDF',
-                svg: '<svg width="32" height="38" viewBox="0 0 28 34" fill="none"><path d="M4 2h14l8 8v22a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#FDF2F1" stroke="#B23A2F" stroke-width="1.5"/><path d="M18 2v8h8" stroke="#B23A2F" stroke-width="1.5" fill="none"/><rect x="2" y="17" width="18" height="10" rx="2" fill="#B23A2F"/><text x="11" y="25" font-family="Arial" font-size="7" font-weight="700" fill="white" text-anchor="middle">PDF</text></svg>'
-            },
-            plantilla: {
-                color: '#7A5C1E',
-                bg:    '#FBF5E8',
-                label: 'Plantilla',
-                svg: '<svg width="32" height="38" viewBox="0 0 28 34" fill="none"><path d="M4 2h14l8 8v22a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#FBF5E8" stroke="#C5A882" stroke-width="1.5"/><path d="M18 2v8h8" stroke="#C5A882" stroke-width="1.5" fill="none"/><path d="M7 18h14M7 22h10M7 26h12" stroke="#C5A882" stroke-width="1.5" stroke-linecap="round"/></svg>'
-            },
-            otro: {
-                color: '#3A5C7A',
-                bg:    '#EEF4F9',
-                label: 'Archivo',
-                svg: '<svg width="32" height="38" viewBox="0 0 28 34" fill="none"><path d="M4 2h14l8 8v22a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#EEF4F9" stroke="#3A5C7A" stroke-width="1.5"/><path d="M18 2v8h8" stroke="#3A5C7A" stroke-width="1.5" fill="none"/><path d="M7 18h14M7 22h10M7 26h12" stroke="#3A5C7A" stroke-width="1.5" stroke-linecap="round"/></svg>'
-            }
-        };
-        return configs[tipo] || configs.otro;
-    }
-
     function renderRecursos(lista) {
         var wrap = document.getElementById('leyre-recursos-wrap');
 
         if (!lista.length) {
-            wrap.innerHTML = '<p style="color:var(--c-muted,#8A8080);padding:20px 0;grid-column:1/-1">No hay recursos en esta categoría.</p>';
+            wrap.innerHTML = '<p style="color:var(--c-muted,#8A8080);padding:20px 0">No hay recursos en esta categoría.</p>';
             return;
         }
 
@@ -176,32 +151,32 @@ defined( 'ABSPATH' ) || exit;
 
         Object.values(grupos).forEach(function (g) {
             if (multiGrupo) {
-                html += '<div class="leyre-recursos-grupo-header" style="grid-column:1/-1"><h3 class="leyre-recursos-grupo-titulo">' + g.titulo + '</h3></div>';
+                html += '<h3 class="leyre-recurso-row__grupo">' + g.titulo + '</h3>';
             }
-
             g.items.forEach(function (r) {
-                var cfg = tipoConfig(r.tipo || 'otro');
-                var moduloTag = r.modulo_titulo
-                    ? '<span class="leyre-recurso-card__modulo">' + r.modulo_titulo + '</span>'
-                    : '';
+                var tipo = r.tipo || 'otro';
+                var tipoLabel = tipo === 'pdf' ? 'PDF' : tipo === 'plantilla' ? 'Plantilla' : 'Archivo';
+                var meta = tipoLabel;
+                if (r.modulo_titulo) meta += ' · ' + r.modulo_titulo;
 
-                html += '<div class="leyre-recurso-card" data-modulo="' + (r.modulo_id || '') + '">' +
-                    '<div class="leyre-recurso-card__icono" style="background:' + cfg.bg + ';border-color:' + cfg.bg + '">' +
-                        cfg.svg +
+                html += '<div class="leyre-recurso-row" data-modulo="' + (r.modulo_id || '') + '">' +
+                    '<div class="leyre-recurso-row__icono">' +
+                        '<svg width="18" height="22" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                            '<path d="M4 2h10l6 6v18a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/>' +
+                            '<path d="M14 2v6h6"/>' +
+                            '<path d="M7 13h10M7 17h7"/>' +
+                        '</svg>' +
                     '</div>' +
-                    '<div class="leyre-recurso-card__info">' +
-                        '<div class="leyre-recurso-card__badges">' +
-                            '<span class="leyre-recurso-card__tipo" style="color:' + cfg.color + ';background:' + cfg.bg + '">' + cfg.label + '</span>' +
-                            moduloTag +
-                        '</div>' +
-                        '<p class="leyre-recurso-card__titulo">' + r.titulo + '</p>' +
+                    '<div class="leyre-recurso-row__info">' +
+                        '<p class="leyre-recurso-row__titulo">' + r.titulo + '</p>' +
+                        '<p class="leyre-recurso-row__meta">' + meta + '</p>' +
                     '</div>' +
-                    '<div class="leyre-recurso-card__accion">' +
-                        '<a href="' + r.url_descarga + '" class="leyre-recurso-card__btn">' +
-                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/><path d="M3 20h18"/></svg>' +
-                            'Descargar' +
-                        '</a>' +
-                    '</div>' +
+                    '<a href="' + r.url_descarga + '" class="leyre-recurso-row__btn">' +
+                        '<span>Descargar</span>' +
+                        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">' +
+                            '<path d="M12 5v14M5 12l7 7 7-7"/>' +
+                        '</svg>' +
+                    '</a>' +
                 '</div>';
             });
         });
