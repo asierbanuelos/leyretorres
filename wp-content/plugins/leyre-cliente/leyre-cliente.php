@@ -49,11 +49,12 @@ add_action( 'admin_init', function() {
     }
 });
 
-// Ocultar la barra de admin para alumnas
+// Admin bar: visible para administradores (para acceder a wp-admin desde el área privada),
+// oculta para alumnas
 add_filter( 'show_admin_bar', function( $show ) {
-    $user = wp_get_current_user();
-    if ( in_array( 'alumno', (array) $user->roles, true ) ) return false;
-    return $show;
+    if ( ! is_user_logged_in() ) return false;
+    if ( current_user_can( 'manage_options' ) ) return true;
+    return false;
 });
 
 require_once LEYRE_PLUGIN_DIR . 'includes/access.php';
