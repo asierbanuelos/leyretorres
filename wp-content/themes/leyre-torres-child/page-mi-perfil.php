@@ -34,7 +34,6 @@ if ( $fecha_fin ) {
 <body <?php body_class( 'leyre-area-privada' ); ?>>
 <?php wp_body_open(); ?>
 
-<?php get_template_part( 'templates/navbar' ); ?>
 <?php get_template_part( 'templates/sidebar-privado' ); ?>
 
 <main class="leyre-main leyre-main--with-sidebar">
