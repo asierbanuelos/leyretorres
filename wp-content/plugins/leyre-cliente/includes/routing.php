@@ -43,7 +43,8 @@ add_action( 'init', function() {
 // Filtrar wp_login_url() para que apunte al login corporativo
 add_filter( 'login_url', function( $url, $redirect, $force_reauth ) {
     $custom = home_url( '/login/' );
-    if ( $redirect ) $custom = add_query_arg( 'redirect_to', urlencode( $redirect ), $custom );
+    // add_query_arg ya urlencodea el valor, así que NO llamamos urlencode() antes
+    if ( $redirect ) $custom = add_query_arg( 'redirect_to', $redirect, $custom );
     return $custom;
 }, 10, 3 );
 
