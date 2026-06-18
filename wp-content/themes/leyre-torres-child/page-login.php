@@ -92,10 +92,10 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
 
         .ll-brand__titulo {
             font-family: 'Edwardian Script ITC', 'Great Vibes', cursive;
-            font-size: clamp(100px, 13vw, 200px);
+            font-size: clamp(48px, 6vw, 80px);
             font-weight: 400;
             color: var(--c-brand, #C5A882);
-            line-height: 1;
+            line-height: 1.1;
             margin-bottom: 28px;
         }
 
@@ -279,7 +279,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
                 padding: 32px 24px 28px;
             }
 
-            .ll-brand__titulo { font-size: clamp(60px, 18vw, 100px); margin-bottom: 12px; }
+            .ll-brand__titulo { font-size: clamp(36px, 10vw, 56px); margin-bottom: 12px; }
             .ll-brand__sub { display: none; }
             .ll-brand__deco { display: none; }
             .ll-brand__footer { display: none; }
