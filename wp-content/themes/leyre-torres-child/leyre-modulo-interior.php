@@ -42,9 +42,9 @@ $titulo_modulo = $modulo_data['titulo'] ?? 'Módulo';
 <body <?php body_class( 'leyre-area-privada leyre-modulo-page' ); ?>>
 <?php wp_body_open(); ?>
 
-<?php get_template_part( 'templates/navbar' ); ?>
+<?php get_template_part( 'templates/sidebar-privado' ); ?>
 
-<main class="leyre-main leyre-main--modulo">
+<main class="leyre-main leyre-main--modulo leyre-main--with-sidebar">
     <div class="leyre-container">
 
         <!-- Breadcrumb -->
