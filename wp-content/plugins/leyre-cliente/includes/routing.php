@@ -28,11 +28,25 @@ add_filter( 'query_vars', function( $vars ) {
 
 // Auto-flush rewrite rules cuando se actualiza el routing
 add_action( 'init', function() {
-    if ( get_option( 'leyre_routing_ver' ) !== '1.2' ) {
+    if ( get_option( 'leyre_routing_ver' ) !== '1.3' ) {
         flush_rewrite_rules();
-        update_option( 'leyre_routing_ver', '1.2' );
+        update_option( 'leyre_routing_ver', '1.3' );
     }
 }, 999 );
+
+// ── /comprar/ — añade el programa al carrito y redirige a checkout ────────────
+add_action( 'init', function() {
+    if ( ! isset( $_GET['leyre_comprar'] ) ) return;
+    if ( ! function_exists( 'WC' ) ) return;
+
+    $producto_id = (int) get_option( 'leyre_producto_id', 0 );
+    if ( ! $producto_id ) return;
+
+    WC()->cart->empty_cart();
+    WC()->cart->add_to_cart( $producto_id );
+    wp_redirect( wc_get_checkout_url() );
+    exit;
+}, 20 );
 
 // Template para /audios/
 add_filter( 'template_include', function( $template ) {
