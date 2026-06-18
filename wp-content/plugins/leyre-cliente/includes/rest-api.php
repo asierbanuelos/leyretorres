@@ -64,7 +64,12 @@ function leyre_endpoint_dashboard() {
         'meta_query'  => [
             'relation' => 'AND',
             [ 'key' => '_leyre_fecha_sesion', 'value' => $ahora, 'compare' => '>=', 'type' => 'CHAR' ],
-            [ 'key' => '_leyre_estado', 'value' => 'completada', 'compare' => '!=' ],
+            [ 'key' => '_leyre_estado',       'value' => 'completada', 'compare' => '!=' ],
+            [
+                'relation' => 'OR',
+                [ 'key' => '_leyre_usuario_id', 'value' => $user_id, 'compare' => '=' ],
+                [ 'key' => '_leyre_tipo_sesion', 'value' => 'grupal', 'compare' => '=' ],
+            ],
         ],
     ]);
 
@@ -168,26 +173,55 @@ function leyre_endpoint_completar_leccion( WP_REST_Request $request ) {
 // ── GET /sesiones ─────────────────────────────────────────────────────────────
 
 function leyre_endpoint_sesiones() {
-    $sesiones = get_posts([
+    $user_id = get_current_user_id();
+
+    // Sesiones 1:1 asignadas a este usuario
+    $s_1a1 = get_posts([
         'post_type'   => 'leyre_sesion_tipo',
         'numberposts' => -1,
         'post_status' => 'publish',
         'orderby'     => 'meta_value_num',
         'meta_key'    => '_leyre_numero_sesion',
         'order'       => 'ASC',
+        'meta_query'  => [
+            [ 'key' => '_leyre_tipo_sesion', 'value' => '1a1',     'compare' => '=' ],
+            [ 'key' => '_leyre_usuario_id',  'value' => $user_id,  'compare' => '=' ],
+        ],
     ]);
 
-    return rest_ensure_response([
-        'sesiones' => array_map( fn( $s ) => [
-            'id'             => $s->ID,
-            'nombre'         => $s->post_title,
-            'numero'         => (int) get_post_meta( $s->ID, '_leyre_numero_sesion',  true ),
-            'tipo_sesion'    => get_post_meta( $s->ID, '_leyre_tipo_sesion',    true ) ?: '1a1',
-            'estado'         => get_post_meta( $s->ID, '_leyre_estado',         true ) ?: 'pendiente',
-            'fecha'          => get_post_meta( $s->ID, '_leyre_fecha_sesion',   true ),
-            'enlace_reunion' => get_post_meta( $s->ID, '_leyre_enlace_reunion', true ),
-        ], $sesiones ),
+    // Sesiones grupales (visibles para todas)
+    $s_grupal = get_posts([
+        'post_type'   => 'leyre_sesion_tipo',
+        'numberposts' => -1,
+        'post_status' => 'publish',
+        'orderby'     => 'meta_value_num',
+        'meta_key'    => '_leyre_numero_sesion',
+        'order'       => 'ASC',
+        'meta_query'  => [
+            [ 'key' => '_leyre_tipo_sesion', 'value' => 'grupal', 'compare' => '=' ],
+        ],
     ]);
+
+    $sesiones = array_merge(
+        array_map( 'leyre_formatear_sesion_item', $s_1a1 ),
+        array_map( 'leyre_formatear_sesion_item', $s_grupal )
+    );
+
+    usort( $sesiones, fn( $a, $b ) => $a['numero'] <=> $b['numero'] );
+
+    return rest_ensure_response([ 'sesiones' => $sesiones ]);
+}
+
+function leyre_formatear_sesion_item( $s ) {
+    return [
+        'id'             => $s->ID,
+        'nombre'         => $s->post_title,
+        'numero'         => (int) get_post_meta( $s->ID, '_leyre_numero_sesion',  true ),
+        'tipo_sesion'    => get_post_meta( $s->ID, '_leyre_tipo_sesion',    true ) ?: '1a1',
+        'estado'         => get_post_meta( $s->ID, '_leyre_estado',         true ) ?: 'pendiente',
+        'fecha'          => get_post_meta( $s->ID, '_leyre_fecha_sesion',   true ),
+        'enlace_reunion' => get_post_meta( $s->ID, '_leyre_enlace_reunion', true ),
+    ];
 }
 
 // ── GET /recursos ─────────────────────────────────────────────────────────────

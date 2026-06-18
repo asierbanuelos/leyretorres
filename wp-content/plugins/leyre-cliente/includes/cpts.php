@@ -276,6 +276,13 @@ function leyre_mb_sesion_tipo( $post ) {
     $estado       = get_post_meta( $post->ID, '_leyre_estado',          true ) ?: 'pendiente';
     $fecha        = get_post_meta( $post->ID, '_leyre_fecha_sesion',    true );
     $enlace       = get_post_meta( $post->ID, '_leyre_enlace_reunion',  true );
+    $usuario_id   = (int) get_post_meta( $post->ID, '_leyre_usuario_id', true );
+
+    $usuarios = get_users([
+        'orderby' => 'display_name',
+        'order'   => 'ASC',
+        'number'  => 500,
+    ]);
     ?>
     <table class="form-table" role="presentation">
         <tr>
@@ -288,10 +295,28 @@ function leyre_mb_sesion_tipo( $post ) {
         <tr>
             <th><label><strong>Tipo</strong></label></th>
             <td>
-                <select name="leyre_tipo_sesion">
+                <select name="leyre_tipo_sesion" id="leyre_tipo_sesion">
                     <option value="1a1"    <?php selected( $tipo_sesion, '1a1' );    ?>>Individual 1:1</option>
                     <option value="grupal" <?php selected( $tipo_sesion, 'grupal' ); ?>>Grupal / Mentoría</option>
                 </select>
+            </td>
+        </tr>
+        <tr id="leyre-fila-alumna">
+            <th><label for="leyre_usuario_id"><strong>Alumna asignada</strong></label></th>
+            <td>
+                <input type="text" id="leyre-buscar-alumna" placeholder="Buscar por nombre o email…"
+                       autocomplete="off"
+                       style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:3px 3px 0 0;border-bottom:none;font-size:13px;box-sizing:border-box">
+                <select name="leyre_usuario_id" id="leyre_usuario_id" size="6"
+                        style="width:100%;border:1px solid #ddd;border-radius:0 0 3px 3px;font-size:13px;padding:2px">
+                    <option value="">— Sin asignar —</option>
+                    <?php foreach ( $usuarios as $u ) : ?>
+                        <option value="<?php echo $u->ID; ?>" <?php selected( $usuario_id, $u->ID ); ?>>
+                            <?php echo esc_html( $u->display_name . '  ·  ' . $u->user_email ); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="description" style="margin-top:6px">Selecciona la alumna para esta sesión 1:1. Para grupales, deja sin asignar.</p>
             </td>
         </tr>
         <tr>
@@ -319,8 +344,90 @@ function leyre_mb_sesion_tipo( $post ) {
             </td>
         </tr>
     </table>
+
+    <script>
+    jQuery(function($) {
+        var $buscar  = $('#leyre-buscar-alumna');
+        var $select  = $('#leyre_usuario_id');
+        var $fila    = $('#leyre-fila-alumna');
+        var $tipo    = $('#leyre_tipo_sesion');
+        var $opciones = $select.find('option').clone();
+
+        // Mostrar nombre del seleccionado al cargar
+        var seleccionado = $select.find('option:selected');
+        if (seleccionado.val()) {
+            $buscar.val(seleccionado.text().trim());
+        }
+
+        // Filtrar lista al escribir
+        $buscar.on('input', function() {
+            var term    = $(this).val().toLowerCase().trim();
+            var actual  = $select.val();
+            $select.empty();
+            $opciones.each(function() {
+                if (!$(this).val() || !term || $(this).text().toLowerCase().includes(term)) {
+                    $select.append($(this).clone());
+                }
+            });
+            if ($select.find('option[value="' + actual + '"]').length) {
+                $select.val(actual);
+            }
+        });
+
+        // Mostrar/ocultar selector según tipo de sesión
+        function toggleAlumna() {
+            $fila.toggle($tipo.val() === '1a1');
+        }
+        $tipo.on('change', toggleAlumna);
+        toggleAlumna();
+    });
+    </script>
     <?php
 }
+
+// ── Columnas en la lista de sesiones ─────────────────────────────────────────
+
+add_filter( 'manage_leyre_sesion_tipo_posts_columns', function( $cols ) {
+    $nuevo = [];
+    foreach ( $cols as $k => $v ) {
+        $nuevo[$k] = $v;
+        if ( $k === 'title' ) {
+            $nuevo['leyre_alumna'] = 'Alumna';
+            $nuevo['leyre_tipo']   = 'Tipo';
+            $nuevo['leyre_estado'] = 'Estado';
+            $nuevo['leyre_fecha']  = 'Fecha';
+        }
+    }
+    return $nuevo;
+});
+
+add_action( 'manage_leyre_sesion_tipo_posts_custom_column', function( $col, $post_id ) {
+    switch ( $col ) {
+        case 'leyre_alumna':
+            $uid = (int) get_post_meta( $post_id, '_leyre_usuario_id', true );
+            if ( $uid ) {
+                $u = get_userdata( $uid );
+                echo $u ? esc_html( $u->display_name ) : '<span style="color:#999">—</span>';
+            } else {
+                echo '<span style="color:#999">Grupal</span>';
+            }
+            break;
+        case 'leyre_tipo':
+            $tipo = get_post_meta( $post_id, '_leyre_tipo_sesion', true );
+            echo $tipo === 'grupal' ? 'Grupal' : '1:1';
+            break;
+        case 'leyre_estado':
+            $estado = get_post_meta( $post_id, '_leyre_estado', true ) ?: 'pendiente';
+            $colores = [ 'pendiente' => '#888', 'programada' => '#2271b1', 'completada' => '#5a9e72' ];
+            $color   = $colores[$estado] ?? '#888';
+            echo '<span style="color:' . $color . ';font-weight:600;text-transform:capitalize">' . esc_html( $estado ) . '</span>';
+            break;
+        case 'leyre_fecha':
+            $fecha = get_post_meta( $post_id, '_leyre_fecha_sesion', true );
+            echo $fecha ? esc_html( date( 'd/m/Y H:i', strtotime( $fecha ) ) ) : '<span style="color:#999">—</span>';
+            break;
+    }
+}, 10, 2 );
 
 // ─── Guardado de metaboxes ────────────────────────────────────────────────────
 
@@ -373,4 +480,5 @@ function leyre_guardar_meta_sesion_tipo( $post_id ) {
     update_post_meta( $post_id, '_leyre_estado',         sanitize_text_field( $_POST['leyre_estado'] ?? 'pendiente' ) );
     update_post_meta( $post_id, '_leyre_fecha_sesion',   sanitize_text_field( $_POST['leyre_fecha_sesion'] ?? '' ) );
     update_post_meta( $post_id, '_leyre_enlace_reunion', esc_url_raw( $_POST['leyre_enlace_reunion'] ?? '' ) );
+    update_post_meta( $post_id, '_leyre_usuario_id',     absint( $_POST['leyre_usuario_id'] ?? 0 ) );
 }
