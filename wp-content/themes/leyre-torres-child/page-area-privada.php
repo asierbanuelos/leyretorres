@@ -99,17 +99,17 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
                 <h2 class="leyre-section__title--xl">Tus materiales</h2>
                 <a href="<?php echo home_url( '/recursos' ); ?>" class="leyre-section__link">Ver todos →</a>
             </div>
-            <div class="leyre-recursos-grid" id="leyre-recursos-dashboard">
-                <?php for ( $i = 0; $i < 2; $i++ ) : ?>
-                <div class="leyre-recurso-card">
-                    <div class="leyre-recurso-card__icono" style="background:#FDF2F1">
-                        <div class="leyre-skeleton" style="width:32px;height:38px;border-radius:4px"></div>
+            <div class="leyre-recursos-list" id="leyre-recursos-dashboard">
+                <?php for ( $i = 0; $i < 3; $i++ ) : ?>
+                <div class="leyre-recurso-row">
+                    <div class="leyre-recurso-row__icono">
+                        <div class="leyre-skeleton" style="width:18px;height:22px;border-radius:3px"></div>
                     </div>
-                    <div class="leyre-recurso-card__info">
-                        <div class="leyre-skeleton" style="height:11px;width:60px;margin-bottom:8px"></div>
-                        <div class="leyre-skeleton" style="height:15px;width:75%"></div>
+                    <div class="leyre-recurso-row__info">
+                        <div class="leyre-skeleton" style="height:14px;width:48%;margin-bottom:8px"></div>
+                        <div class="leyre-skeleton" style="height:11px;width:28%"></div>
                     </div>
-                    <div class="leyre-skeleton" style="height:40px;width:110px;border-radius:8px;flex-shrink:0"></div>
+                    <div class="leyre-skeleton" style="height:11px;width:80px;margin-left:auto"></div>
                 </div>
                 <?php endfor; ?>
             </div>
@@ -200,27 +200,31 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
     }
 
     function renderRecursosDashboard(recursos) {
-        var grid = document.getElementById('leyre-recursos-dashboard');
+        var list = document.getElementById('leyre-recursos-dashboard');
         if (!recursos.length) {
-            grid.innerHTML = '<p style="color:var(--c-muted,#8A8080);grid-column:1/-1;font-size:14px">Los recursos se añadirán próximamente.</p>';
+            list.innerHTML = '<p style="color:var(--c-muted,#8A8080);font-size:14px;padding:8px 0">Los recursos se añadirán próximamente.</p>';
             return;
         }
-        grid.innerHTML = recursos.map(function(r) {
-            var cfg = recursoTipoConfig(r.tipo || 'otro');
-            return '<div class="leyre-recurso-card">' +
-                '<div class="leyre-recurso-card__icono" style="background:' + cfg.bg + '">' + cfg.svg + '</div>' +
-                '<div class="leyre-recurso-card__info">' +
-                    '<div class="leyre-recurso-card__badges">' +
-                        '<span class="leyre-recurso-card__tipo" style="color:' + cfg.color + ';background:' + cfg.bg + '">' + cfg.label + '</span>' +
-                    '</div>' +
-                    '<p class="leyre-recurso-card__titulo">' + r.titulo + '</p>' +
+        list.innerHTML = recursos.map(function(r) {
+            var tipo = r.tipo || 'otro';
+            var tipoLabel = tipo === 'pdf' ? 'PDF' : tipo === 'plantilla' ? 'Plantilla' : 'Archivo';
+            var meta = tipoLabel + (r.modulo_titulo ? ' · ' + r.modulo_titulo : '');
+            return '<div class="leyre-recurso-row">' +
+                '<div class="leyre-recurso-row__icono">' +
+                    '<svg width="18" height="22" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                        '<path d="M4 2h10l6 6v18a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/>' +
+                        '<path d="M14 2v6h6"/>' +
+                        '<path d="M7 13h10M7 17h7"/>' +
+                    '</svg>' +
                 '</div>' +
-                '<div class="leyre-recurso-card__accion">' +
-                    '<a href="' + r.url_descarga + '" class="leyre-recurso-card__btn">' +
-                        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/><path d="M3 20h18"/></svg>' +
-                        'Descargar' +
-                    '</a>' +
+                '<div class="leyre-recurso-row__info">' +
+                    '<p class="leyre-recurso-row__titulo">' + r.titulo + '</p>' +
+                    '<p class="leyre-recurso-row__meta">' + meta + '</p>' +
                 '</div>' +
+                '<a href="' + r.url_descarga + '" class="leyre-recurso-row__btn">' +
+                    '<span>Descargar</span>' +
+                    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>' +
+                '</a>' +
             '</div>';
         }).join('');
     }

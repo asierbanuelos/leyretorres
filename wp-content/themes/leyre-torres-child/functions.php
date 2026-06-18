@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 // Encolar estilos del padre + hijo
 add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style( 'hello-elementor-style', get_template_directory_uri() . '/style.css' );
-    wp_enqueue_style( 'leyre-child-style', get_stylesheet_uri(), [ 'hello-elementor-style' ], '1.0.0' );
+    wp_enqueue_style( 'leyre-child-style', get_stylesheet_uri(), [ 'hello-elementor-style' ], filemtime( get_stylesheet_directory() . '/style.css' ) );
 
     // Google Fonts
     wp_enqueue_style(
