@@ -45,6 +45,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Acceso al programa — <?php bloginfo( 'name' ); ?></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <?php wp_head(); ?>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -89,17 +91,17 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
         .ll-brand__body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
         .ll-brand__titulo {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: clamp(38px, 4.5vw, 64px);
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.05;
+            font-family: 'Edwardian Script ITC', 'Great Vibes', cursive;
+            font-size: clamp(100px, 13vw, 200px);
+            font-weight: 400;
+            color: var(--c-brand, #C5A882);
+            line-height: 1;
             margin-bottom: 28px;
         }
 
         .ll-brand__titulo em {
-            font-style: italic;
-            color: var(--c-brand, #C5A882);
+            font-style: normal;
+            display: block;
         }
 
         .ll-brand__sub {
@@ -277,7 +279,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
                 padding: 32px 24px 28px;
             }
 
-            .ll-brand__titulo { font-size: 32px; margin-bottom: 16px; }
+            .ll-brand__titulo { font-size: clamp(60px, 18vw, 100px); margin-bottom: 12px; }
             .ll-brand__sub { display: none; }
             .ll-brand__deco { display: none; }
             .ll-brand__footer { display: none; }
@@ -294,7 +296,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
     <div class="ll-brand__logo">Leyre Torres</div>
 
     <div class="ll-brand__body">
-        <h1 class="ll-brand__titulo">Leonas<br>en <em>Tacones</em></h1>
+        <h1 class="ll-brand__titulo">Leonas en Tacones</h1>
         <p class="ll-brand__sub">Tu espacio privado de mentoría, formación y crecimiento personal. Bienvenida de vuelta.</p>
     </div>
 
