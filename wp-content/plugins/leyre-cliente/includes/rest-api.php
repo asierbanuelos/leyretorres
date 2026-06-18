@@ -44,6 +44,12 @@ function leyre_registrar_endpoints() {
         'callback'            => 'leyre_endpoint_recursos',
         'permission_callback' => $auth,
     ]);
+
+    register_rest_route( $namespace, '/audios', [
+        'methods'             => 'GET',
+        'callback'            => 'leyre_endpoint_audios',
+        'permission_callback' => $auth,
+    ]);
 }
 
 // ── GET /dashboard ────────────────────────────────────────────────────────────
@@ -246,6 +252,32 @@ function leyre_endpoint_recursos() {
             'url_descarga'  => home_url( '/descargar-recurso/?id=' . $r->ID ),
         ];
     }, $recursos );
+
+    return rest_ensure_response( $data );
+}
+
+// ── GET /audios ───────────────────────────────────────────────────────────────
+
+function leyre_endpoint_audios() {
+    $audios = get_posts([
+        'post_type'   => 'leyre_audio',
+        'numberposts' => -1,
+        'orderby'     => 'menu_order',
+        'order'       => 'ASC',
+        'post_status' => 'publish',
+    ]);
+
+    $data = array_map( function( $a ) {
+        $file_id = (int) get_post_meta( $a->ID, '_leyre_audio_file_id', true );
+        return [
+            'id'          => $a->ID,
+            'titulo'      => $a->post_title,
+            'descripcion' => get_post_meta( $a->ID, '_leyre_audio_descripcion', true ),
+            'duracion'    => get_post_meta( $a->ID, '_leyre_audio_duracion',    true ),
+            'categoria'   => get_post_meta( $a->ID, '_leyre_audio_categoria',   true ),
+            'url'         => $file_id ? wp_get_attachment_url( $file_id ) : get_post_meta( $a->ID, '_leyre_audio_file_url', true ),
+        ];
+    }, $audios );
 
     return rest_ensure_response( $data );
 }

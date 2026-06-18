@@ -59,6 +59,24 @@ function leyre_registrar_cpts() {
         'rewrite'      => false,
     ]);
 
+    // ── CPT: Audio ───────────────────────────────────────────────────────────
+    register_post_type( 'leyre_audio', [
+        'labels'       => [
+            'name'          => 'Audios',
+            'singular_name' => 'Audio',
+            'add_new_item'  => 'Añadir audio',
+            'edit_item'     => 'Editar audio',
+            'menu_name'     => 'Audios',
+        ],
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_menu' => 'leyre-admin',
+        'show_in_rest' => false,
+        'supports'     => [ 'title', 'page-attributes' ],
+        'menu_icon'    => 'dashicons-format-audio',
+        'rewrite'      => false,
+    ]);
+
     // ── CPT: Sesión ───────────────────────────────────────────────────────────
     register_post_type( 'leyre_sesion_tipo', [
         'labels'       => [
@@ -85,6 +103,7 @@ function leyre_add_meta_boxes() {
     add_meta_box( 'leyre_modulo_meta',     'Detalles del módulo',       'leyre_mb_modulo',     'leyre_modulo',     'normal', 'high' );
     add_meta_box( 'leyre_leccion_meta',    'Detalles de la lección',    'leyre_mb_leccion',    'leyre_leccion',    'normal', 'high' );
     add_meta_box( 'leyre_recurso_meta',    'Detalles del recurso',      'leyre_mb_recurso',    'leyre_recurso',    'normal', 'high' );
+    add_meta_box( 'leyre_audio_meta',      'Archivo de audio',          'leyre_mb_audio',      'leyre_audio',      'normal', 'high' );
     add_meta_box( 'leyre_sesion_tipo_meta','Detalles de la sesión','leyre_mb_sesion_tipo','leyre_sesion_tipo','normal', 'high' );
 }
 
@@ -160,7 +179,7 @@ function leyre_mb_leccion( $post ) {
 add_action( 'admin_enqueue_scripts', function( $hook ) {
     global $post;
     if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ] ) ) return;
-    if ( ! $post || $post->post_type !== 'leyre_recurso' ) return;
+    if ( ! $post || ! in_array( $post->post_type, [ 'leyre_recurso', 'leyre_audio' ] ) ) return;
     wp_enqueue_media();
 } );
 
@@ -260,6 +279,91 @@ function leyre_mb_recurso( $post ) {
             $('#leyre_archivo_id').val('');
             $('#leyre-archivo-preview').hide();
             $('#leyre-subir-archivo').text('📎 Seleccionar o subir archivo');
+            frame = null;
+        });
+    });
+    </script>
+    <?php
+}
+
+// ── Metabox: Audio ───────────────────────────────────────────────────────────
+
+function leyre_mb_audio( $post ) {
+    wp_nonce_field( 'leyre_audio_save', 'leyre_audio_nonce' );
+    $audio_id    = (int) get_post_meta( $post->ID, '_leyre_audio_file_id', true );
+    $audio_url   = $audio_id ? wp_get_attachment_url( $audio_id ) : '';
+    $audio_nombre = $audio_id ? basename( get_attached_file( $audio_id ) ) : '';
+    $descripcion = get_post_meta( $post->ID, '_leyre_audio_descripcion', true );
+    $duracion    = get_post_meta( $post->ID, '_leyre_audio_duracion', true );
+    $categoria   = get_post_meta( $post->ID, '_leyre_audio_categoria', true );
+    ?>
+    <p>
+        <label><strong>Archivo de audio</strong></label><br>
+
+        <input type="hidden" name="leyre_audio_file_id" id="leyre_audio_file_id" value="<?php echo esc_attr( $audio_id ); ?>">
+
+        <div id="leyre-audio-preview" style="margin:8px 0;padding:10px 12px;background:#f6f7f7;border:1px solid #ddd;border-radius:4px;display:<?php echo $audio_id ? 'block' : 'none'; ?>">
+            <p style="margin:0 0 8px;font-weight:600" id="leyre-audio-nombre"><?php echo esc_html( $audio_nombre ); ?></p>
+            <?php if ( $audio_url ) : ?>
+            <audio controls src="<?php echo esc_url( $audio_url ); ?>" style="width:100%;height:36px" id="leyre-audio-player"></audio>
+            <?php else : ?>
+            <audio controls style="width:100%;height:36px;display:none" id="leyre-audio-player"></audio>
+            <?php endif; ?>
+            <button type="button" id="leyre-quitar-audio" style="margin-top:6px;background:none;border:none;color:#a00;cursor:pointer;font-size:12px;font-weight:600;padding:0">✕ Quitar</button>
+        </div>
+
+        <button type="button" id="leyre-subir-audio" class="button button-secondary" style="margin-top:4px">
+            <?php echo $audio_id ? '🔄 Cambiar audio' : '🎵 Seleccionar o subir audio'; ?>
+        </button>
+        <span style="color:#888;font-size:12px;margin-left:8px">MP3, WAV, M4A…</span>
+    </p>
+    <p>
+        <label><strong>Descripción breve</strong></label><br>
+        <input type="text" name="leyre_audio_descripcion" value="<?php echo esc_attr( $descripcion ); ?>" placeholder="Ej: Ejercicio de respiración para antes de una reunión" style="width:100%">
+    </p>
+    <p>
+        <label><strong>Duración</strong></label><br>
+        <input type="text" name="leyre_audio_duracion" value="<?php echo esc_attr( $duracion ); ?>" placeholder="ej: 8 min" style="width:120px">
+    </p>
+    <p>
+        <label><strong>Categoría</strong></label><br>
+        <input type="text" name="leyre_audio_categoria" value="<?php echo esc_attr( $categoria ); ?>" placeholder="ej: Meditaciones, Ejercicios…" style="width:100%">
+        <span style="color:#888;font-size:12px">Opcional. Se usa para agrupar los audios en la plataforma.</span>
+    </p>
+
+    <script>
+    jQuery(function($) {
+        var frame;
+
+        $('#leyre-subir-audio').on('click', function(e) {
+            e.preventDefault();
+            if ( frame ) { frame.open(); return; }
+
+            frame = wp.media({
+                title:    'Seleccionar o subir audio',
+                button:   { text: 'Usar este audio' },
+                library:  { type: 'audio' },
+                multiple: false,
+            });
+
+            frame.on('select', function() {
+                var a = frame.state().get('selection').first().toJSON();
+                $('#leyre_audio_file_id').val(a.id);
+                $('#leyre-audio-nombre').text(a.filename);
+                $('#leyre-audio-player').attr('src', a.url).show();
+                $('#leyre-audio-preview').show();
+                $('#leyre-subir-audio').text('🔄 Cambiar audio');
+            });
+
+            frame.open();
+        });
+
+        $('#leyre-quitar-audio').on('click', function(e) {
+            e.preventDefault();
+            $('#leyre_audio_file_id').val('');
+            $('#leyre-audio-preview').hide();
+            $('#leyre-audio-player').removeAttr('src');
+            $('#leyre-subir-audio').text('🎵 Seleccionar o subir audio');
             frame = null;
         });
     });
@@ -466,6 +570,21 @@ function leyre_guardar_meta_recurso( $post_id ) {
     update_post_meta( $post_id, '_leyre_modulo_id',  absint( $_POST['leyre_modulo_id'] ?? 0 ) );
     update_post_meta( $post_id, '_leyre_tipo',        sanitize_text_field( $_POST['leyre_tipo'] ?? 'pdf' ) );
     update_post_meta( $post_id, '_leyre_archivo_id',  absint( $_POST['leyre_archivo_id'] ?? 0 ) );
+}
+
+add_action( 'save_post', 'leyre_guardar_meta_audio' );
+function leyre_guardar_meta_audio( $post_id ) {
+    if ( ! isset( $_POST['leyre_audio_nonce'] ) ) return;
+    if ( ! wp_verify_nonce( $_POST['leyre_audio_nonce'], 'leyre_audio_save' ) ) return;
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( get_post_type( $post_id ) !== 'leyre_audio' ) return;
+
+    $file_id = absint( $_POST['leyre_audio_file_id'] ?? 0 );
+    update_post_meta( $post_id, '_leyre_audio_file_id',    $file_id );
+    update_post_meta( $post_id, '_leyre_audio_file_url',   $file_id ? wp_get_attachment_url( $file_id ) : '' );
+    update_post_meta( $post_id, '_leyre_audio_descripcion', sanitize_text_field( $_POST['leyre_audio_descripcion'] ?? '' ) );
+    update_post_meta( $post_id, '_leyre_audio_duracion',    sanitize_text_field( $_POST['leyre_audio_duracion']    ?? '' ) );
+    update_post_meta( $post_id, '_leyre_audio_categoria',   sanitize_text_field( $_POST['leyre_audio_categoria']   ?? '' ) );
 }
 
 add_action( 'save_post', 'leyre_guardar_meta_sesion_tipo' );

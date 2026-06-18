@@ -17,7 +17,7 @@ add_action( 'wp_enqueue_scripts', function() {
 
 // Añadir clase body en el área privada
 add_filter( 'body_class', function( $classes ) {
-    $slugs_privados = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'mi-perfil' ];
+    $slugs_privados = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'audios', 'mi-perfil' ];
     if ( is_page( $slugs_privados ) ) {
         $classes[] = 'leyre-area-privada';
     }

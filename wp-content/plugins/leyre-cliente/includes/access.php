@@ -64,7 +64,7 @@ add_action( 'woocommerce_order_status_completed', function( $order_id ) {
 // ─── Protección de URLs del área privada ────────────────────────────────────
 
 add_action( 'template_redirect', function() {
-    $slugs_protegidos = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'mi-perfil' ];
+    $slugs_protegidos = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'audios', 'mi-perfil' ];
     $slug_actual      = get_query_var( 'pagename' );
 
     if ( ! in_array( $slug_actual, $slugs_protegidos, true ) ) return;

@@ -1640,6 +1640,103 @@ body.leyre-area-privada .elementor-location-footer {
   .leyre-recurso-row__btn span { display: none; }
 }
 
+/* ── Audio row ──────────────────────────────────────────────────────────── */
+.leyre-audio-row {
+  background: var(--c-bg, #fff);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-border, #E4DDD6);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: box-shadow .15s;
+}
+
+.leyre-audio-row:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.leyre-audio-row__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.leyre-audio-row__icono {
+  width: 38px;
+  height: 38px;
+  background: var(--c-beige, #F0E8DC);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--c-brand);
+}
+
+.leyre-audio-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.leyre-audio-row__titulo {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--c-dark);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leyre-audio-row__desc {
+  font-size: 12px;
+  color: var(--c-text);
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leyre-audio-row__meta {
+  font-size: 10px;
+  color: var(--c-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.leyre-audio-row__duracion {
+  font-size: 12px;
+  color: var(--c-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.leyre-audio-row__player {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--c-border, #E4DDD6);
+}
+
+.leyre-audio-row__player audio {
+  width: 100%;
+  height: 36px;
+  display: block;
+}
+
+.leyre-audio-row__sin-archivo {
+  font-size: 12px;
+  color: var(--c-muted);
+  margin: 10px 0 0;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .leyre-audio-row { padding: 14px var(--sp-2); }
+  .leyre-audio-row__duracion { display: none; }
+}
+
 /* Estado vacío general */
 .leyre-empty-state {
   text-align: center;
