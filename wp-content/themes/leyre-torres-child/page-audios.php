@@ -162,7 +162,7 @@ $user = wp_get_current_user();
                     '</div>' +
                     (a.url ?
                         '<div class="leyre-audio-row__player">' +
-                            '<audio controls src="' + a.url + '" preload="none" style="width:100%"></audio>' +
+                            '<audio controls controlsList="nodownload" oncontextmenu="return false" src="' + a.url + '" preload="none" style="width:100%"></audio>' +
                         '</div>'
                     : '<p class="leyre-audio-row__sin-archivo">Audio no disponible aún.</p>') +
                 '</div>';
