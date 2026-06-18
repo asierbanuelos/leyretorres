@@ -20,8 +20,9 @@ $progreso = leyre_get_progreso_global( $user_id );
 <?php wp_body_open(); ?>
 
 <?php get_template_part( 'templates/navbar' ); ?>
+<?php get_template_part( 'templates/sidebar-privado' ); ?>
 
-<main class="leyre-main">
+<main class="leyre-main leyre-main--with-sidebar">
 
     <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <div class="leyre-hero leyre-hero--sm">

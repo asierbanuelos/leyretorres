@@ -23,8 +23,9 @@ $porcentaje = ( $duracion > 0 && $dia !== null ) ? min( 100, round( ( $dia / $du
 <?php wp_body_open(); ?>
 
 <?php get_template_part( 'templates/navbar' ); ?>
+<?php get_template_part( 'templates/sidebar-privado' ); ?>
 
-<main class="leyre-main">
+<main class="leyre-main leyre-main--with-sidebar">
 
     <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <div class="leyre-hero">
