@@ -52,6 +52,13 @@ add_action( 'login_init', function() {
     $action = $_REQUEST['action'] ?? 'login';
     if ( ! in_array( $action, [ 'login', '' ], true ) ) return;
     if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) return;
+
+    // Si ya está logueado como administrador, mandarle directo al wp-admin
+    if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+        wp_redirect( admin_url() );
+        exit;
+    }
+
     $redirect = $_GET['redirect_to'] ?? home_url( '/area-privada/' );
     wp_redirect( home_url( '/login/?redirect_to=' . urlencode( $redirect ) ) );
     exit;

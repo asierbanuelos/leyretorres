@@ -5,9 +5,13 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-// Redirigir si ya tiene acceso
-if ( is_user_logged_in() && function_exists( 'leyre_tiene_acceso' ) && leyre_tiene_acceso() ) {
-    wp_redirect( home_url( '/area-privada/' ) );
+// Redirigir si ya está logueado
+if ( is_user_logged_in() ) {
+    if ( current_user_can( 'manage_options' ) ) {
+        wp_redirect( admin_url() );
+    } else {
+        wp_redirect( home_url( '/area-privada/' ) );
+    }
     exit;
 }
 

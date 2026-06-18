@@ -36,6 +36,40 @@ function leyre_pagina_alumnas() {
 
         $accion = sanitize_key( $_POST['leyre_accion'] ?? '' );
 
+        // Crear nueva alumna
+        if ( $accion === 'crear_alumna' ) {
+            $nombre = sanitize_text_field( $_POST['leyre_nombre'] ?? '' );
+            $email  = sanitize_email( $_POST['leyre_email'] ?? '' );
+            $enviar = ! empty( $_POST['leyre_enviar_email'] );
+
+            if ( ! $nombre || ! $email || ! is_email( $email ) ) {
+                $notice = "<div class='notice notice-error is-dismissible'><p>Nombre y email válido son obligatorios.</p></div>";
+            } elseif ( email_exists( $email ) ) {
+                $notice = "<div class='notice notice-error is-dismissible'><p>Ya existe una usuaria con ese email. Búscala en la lista y activa su acceso desde ahí.</p></div>";
+            } else {
+                $password = wp_generate_password( 12, false );
+                $uid      = wp_insert_user([
+                    'user_login'   => $email,
+                    'user_email'   => $email,
+                    'display_name' => $nombre,
+                    'first_name'   => explode( ' ', $nombre )[0],
+                    'user_pass'    => $password,
+                    'role'         => 'alumno',
+                ]);
+
+                if ( is_wp_error( $uid ) ) {
+                    $notice = "<div class='notice notice-error is-dismissible'><p>" . esc_html( $uid->get_error_message() ) . "</p></div>";
+                } else {
+                    leyre_activar_acceso( $uid );
+                    if ( $enviar ) {
+                        leyre_enviar_email_credenciales( $uid, $password );
+                    }
+                    $fin = get_user_meta( $uid, 'leyre_fecha_fin', true );
+                    $notice = "<div class='notice notice-success is-dismissible'><p>✓ Alumna <strong>" . esc_html( $nombre ) . "</strong> creada con acceso hasta <strong>{$fin}</strong>." . ( $enviar ? ' Credenciales enviadas a <strong>' . esc_html( $email ) . '</strong>.' : '' ) . "</p></div>";
+                }
+            }
+        }
+
         // Ampliar individual
         if ( $accion === 'ampliar_individual' ) {
             $uid  = absint( $_POST['leyre_uid'] );
@@ -123,6 +157,31 @@ function leyre_pagina_alumnas() {
             .leyre-dias-restantes { font-weight:700; font-size:13px }
             .leyre-bulk-bar { background:#fff; border:1px solid #ddd; border-radius:6px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap }
         </style>
+
+        <!-- ── NUEVA ALUMNA ──────────────────────────────────────────────── -->
+        <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:20px 24px;margin-bottom:28px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+            <h2 style="margin:0 0 16px;font-size:15px;font-weight:700;color:#18160F">➕ Nueva alumna</h2>
+            <form method="post" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+                <?php wp_nonce_field( 'leyre_acceso_action', '_leyre_nonce' ); ?>
+                <input type="hidden" name="leyre_accion" value="crear_alumna">
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px">Nombre completo *</label>
+                    <input type="text" name="leyre_nombre" placeholder="Ej. María García" required class="regular-text" style="width:220px">
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px">Email *</label>
+                    <input type="email" name="leyre_email" placeholder="Ej. maria@email.com" required class="regular-text" style="width:240px">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding-bottom:2px">
+                    <input type="checkbox" name="leyre_enviar_email" id="leyre_enviar_email" value="1" checked style="margin:0">
+                    <label for="leyre_enviar_email" style="font-size:13px;color:#555;cursor:pointer">Enviar credenciales por email</label>
+                </div>
+                <div>
+                    <button type="submit" class="button button-primary">Crear alumna →</button>
+                </div>
+            </form>
+            <p style="margin:10px 0 0;font-size:12px;color:#888">Se crea la cuenta con rol <em>Alumna</em>, se activa el acceso por <?php echo $duracion_global; ?> días y (si está marcado) se envía el email con usuario y contraseña.</p>
+        </div>
 
         <!-- ── ALUMNAS ACTIVAS ──────────────────────────────────────────── -->
         <h2 style="margin-top:24px">Activas (<?php echo count( $activas ); ?>)</h2>

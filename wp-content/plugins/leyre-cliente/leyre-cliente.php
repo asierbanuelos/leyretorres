@@ -13,7 +13,7 @@ define( 'LEYRE_VERSION',     '1.0.0' );
 define( 'LEYRE_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'LEYRE_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 
-// ── Activación: crear directorio privado y limpiar rewrite rules ─────────────
+// ── Activación: crear directorio privado, rol alumno y limpiar rewrite rules ──
 register_activation_hook( __FILE__, function() {
     $dir = WP_CONTENT_DIR . '/uploads/leyre-privado';
     if ( ! file_exists( $dir ) ) {
@@ -22,7 +22,7 @@ register_activation_hook( __FILE__, function() {
     if ( ! file_exists( $dir . '/.htaccess' ) ) {
         file_put_contents( $dir . '/.htaccess', "deny from all\n" );
     }
-    // Registrar CPTs y routing antes de flush para que las reglas sean correctas
+    add_role( 'alumno', 'Alumna', [ 'read' => true ] );
     leyre_registrar_cpts();
     leyre_registrar_rewrites();
     flush_rewrite_rules();
@@ -30,6 +30,30 @@ register_activation_hook( __FILE__, function() {
 
 register_deactivation_hook( __FILE__, function() {
     flush_rewrite_rules();
+});
+
+// Asegurar que el rol existe en instalaciones ya activas
+add_action( 'init', function() {
+    if ( ! get_role( 'alumno' ) ) {
+        add_role( 'alumno', 'Alumna', [ 'read' => true ] );
+    }
+}, 1 );
+
+// Redirigir alumnas que accedan al wp-admin
+add_action( 'admin_init', function() {
+    if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) return;
+    $user = wp_get_current_user();
+    if ( in_array( 'alumno', (array) $user->roles, true ) ) {
+        wp_redirect( home_url( '/area-privada/' ) );
+        exit;
+    }
+});
+
+// Ocultar la barra de admin para alumnas
+add_filter( 'show_admin_bar', function( $show ) {
+    $user = wp_get_current_user();
+    if ( in_array( 'alumno', (array) $user->roles, true ) ) return false;
+    return $show;
 });
 
 require_once LEYRE_PLUGIN_DIR . 'includes/access.php';
