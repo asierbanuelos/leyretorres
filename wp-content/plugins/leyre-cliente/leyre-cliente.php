@@ -67,5 +67,7 @@ add_action( 'wp_enqueue_scripts', function() {
 
 function leyre_es_pagina_privada() {
     $slugs = [ 'area-privada', 'mis-cursos', 'mis-sesiones', 'recursos', 'mi-perfil', 'acceso' ];
-    return is_page( $slugs ) || (bool) get_query_var( 'leyre_modulo_id' );
+    return is_page( $slugs )
+        || (bool) get_query_var( 'leyre_modulo_id' )
+        || get_query_var( 'leyre_page' ) === 'audios';
 }
