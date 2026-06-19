@@ -55,8 +55,9 @@ add_action( 'woocommerce_created_customer', function( $customer_id, $new_custome
 // Usamos woocommerce_payment_complete (pago confirmado) y también
 // woocommerce_order_status_completed como fallback, la misma función con guard.
 
-add_action( 'woocommerce_payment_complete',      'leyre_activar_por_woocommerce' );
-add_action( 'woocommerce_order_status_completed', 'leyre_activar_por_woocommerce' );
+add_action( 'woocommerce_payment_complete',        'leyre_activar_por_woocommerce' );
+add_action( 'woocommerce_order_status_processing', 'leyre_activar_por_woocommerce' );
+add_action( 'woocommerce_order_status_completed',  'leyre_activar_por_woocommerce' );
 
 function leyre_activar_por_woocommerce( $order_id ) {
     $order       = wc_get_order( $order_id );
