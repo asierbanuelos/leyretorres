@@ -99,11 +99,14 @@ function leyre_activar_por_woocommerce( $order_id ) {
                 'role'         => 'alumno',
             ]);
             if ( is_wp_error( $user_id ) ) return;
-
-            // Vincular pedido al nuevo usuario
-            $order->set_customer_id( $user_id );
-            $order->save();
         }
+
+        // Loguear al usuario para que la página de "gracias" no pida verificación
+        wp_set_auth_cookie( $user_id, true );
+
+        // Vincular pedido al nuevo usuario
+        $order->set_customer_id( $user_id );
+        $order->save();
     }
 
     // Guard: no activar dos veces
