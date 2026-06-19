@@ -41,25 +41,61 @@ function leyre_actualizar_acceso( $user_id, $nueva_fecha_fin ) {
     update_user_meta( $user_id, 'leyre_acceso_activo', '1' );
 }
 
-// ─── Hook: activar acceso al completar pedido WooCommerce ────────────────────
+// ─── Hook: capturar contraseña al crear cuenta WooCommerce ───────────────────
+// woocommerce_created_customer recibe la contraseña en texto plano antes de que
+// wp_insert_user la hashee, así podemos incluirla en el email de bienvenida.
 
-add_action( 'woocommerce_order_status_completed', function( $order_id ) {
+add_action( 'woocommerce_created_customer', function( $customer_id, $new_customer_data, $password_generated ) {
+    if ( ! empty( $new_customer_data['user_pass'] ) ) {
+        set_transient( 'leyre_wc_pass_' . $customer_id, $new_customer_data['user_pass'], HOUR_IN_SECONDS );
+    }
+}, 10, 3 );
+
+// ─── Hook: activar acceso al confirmar pago WooCommerce ──────────────────────
+// Usamos woocommerce_payment_complete (pago confirmado) y también
+// woocommerce_order_status_completed como fallback, la misma función con guard.
+
+add_action( 'woocommerce_payment_complete',      'leyre_activar_por_woocommerce' );
+add_action( 'woocommerce_order_status_completed', 'leyre_activar_por_woocommerce' );
+
+function leyre_activar_por_woocommerce( $order_id ) {
     $order       = wc_get_order( $order_id );
     $producto_id = (int) get_option( 'leyre_producto_id', 0 );
-    $user_id     = $order->get_user_id();
+    $user_id     = $order ? $order->get_user_id() : 0;
 
     if ( ! $user_id || ! $producto_id ) return;
 
+    // Verificar que el pedido contiene el producto del programa
+    $tiene_producto = false;
     foreach ( $order->get_items() as $item ) {
-        if ( (int) $item->get_product_id() !== $producto_id ) continue;
+        if ( (int) $item->get_product_id() === $producto_id ) {
+            $tiene_producto = true;
+            break;
+        }
+    }
+    if ( ! $tiene_producto ) return;
 
-        // No sobreescribir un acceso activo ya existente
-        if ( get_user_meta( $user_id, 'leyre_fecha_inicio', true ) ) continue;
+    // Guard: no activar dos veces
+    if ( get_user_meta( $user_id, 'leyre_fecha_inicio', true ) ) return;
 
-        leyre_activar_acceso( $user_id );
+    leyre_activar_acceso( $user_id );
+
+    // Asignar rol alumno si no lo tiene ya
+    $user_obj = new WP_User( $user_id );
+    if ( ! in_array( 'alumno', (array) $user_obj->roles, true ) ) {
+        $user_obj->set_role( 'alumno' );
+    }
+
+    // Si tenemos la contraseña en texto plano (nueva cuenta), la enviamos en el email
+    $password = get_transient( 'leyre_wc_pass_' . $user_id );
+    if ( $password ) {
+        leyre_enviar_email_credenciales( $user_id, $password );
+        delete_transient( 'leyre_wc_pass_' . $user_id );
+    } else {
+        // Cliente existente: enviamos bienvenida con enlace para restablecer contraseña
         leyre_enviar_email_bienvenida( $user_id );
     }
-});
+}
 
 // ─── Protección de URLs del área privada ────────────────────────────────────
 
