@@ -62,9 +62,8 @@ add_action( 'woocommerce_order_status_completed',  'leyre_activar_por_woocommerc
 function leyre_activar_por_woocommerce( $order_id ) {
     $order       = wc_get_order( $order_id );
     $producto_id = (int) get_option( 'leyre_producto_id', 0 );
-    $user_id     = $order ? $order->get_user_id() : 0;
 
-    if ( ! $user_id || ! $producto_id ) return;
+    if ( ! $order || ! $producto_id ) return;
 
     // Verificar que el pedido contiene el producto del programa
     $tiene_producto = false;
@@ -75,6 +74,37 @@ function leyre_activar_por_woocommerce( $order_id ) {
         }
     }
     if ( ! $tiene_producto ) return;
+
+    $user_id        = $order->get_user_id();
+    $nueva_password = null;
+
+    // Compra de invitado: crear cuenta WordPress con el email de facturación
+    if ( ! $user_id ) {
+        $email = $order->get_billing_email();
+        if ( ! $email ) return;
+
+        $existing = get_user_by( 'email', $email );
+        if ( $existing ) {
+            $user_id = $existing->ID;
+        } else {
+            $nueva_password = wp_generate_password( 12, false );
+            $nombre         = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
+            $user_id        = wp_insert_user([
+                'user_login'   => $email,
+                'user_email'   => $email,
+                'display_name' => $nombre ?: $email,
+                'first_name'   => $order->get_billing_first_name(),
+                'last_name'    => $order->get_billing_last_name(),
+                'user_pass'    => $nueva_password,
+                'role'         => 'alumno',
+            ]);
+            if ( is_wp_error( $user_id ) ) return;
+
+            // Vincular pedido al nuevo usuario
+            $order->set_customer_id( $user_id );
+            $order->save();
+        }
+    }
 
     // Guard: no activar dos veces
     if ( get_user_meta( $user_id, 'leyre_fecha_inicio', true ) ) return;
@@ -87,13 +117,12 @@ function leyre_activar_por_woocommerce( $order_id ) {
         $user_obj->set_role( 'alumno' );
     }
 
-    // Si tenemos la contraseña en texto plano (nueva cuenta), la enviamos en el email
-    $password = get_transient( 'leyre_wc_pass_' . $user_id );
+    // Enviar email con credenciales
+    $password = $nueva_password ?: get_transient( 'leyre_wc_pass_' . $user_id );
     if ( $password ) {
         leyre_enviar_email_credenciales( $user_id, $password );
         delete_transient( 'leyre_wc_pass_' . $user_id );
     } else {
-        // Cliente existente: enviamos bienvenida con enlace para restablecer contraseña
         leyre_enviar_email_bienvenida( $user_id );
     }
 }
