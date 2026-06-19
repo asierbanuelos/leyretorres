@@ -41,14 +41,6 @@ function leyre_actualizar_acceso( $user_id, $nueva_fecha_fin ) {
     update_user_meta( $user_id, 'leyre_acceso_activo', '1' );
 }
 
-// ─── WooCommerce: crear cuenta automáticamente en el checkout ────────────────
-// Genera username y password automáticos para que el cliente quede logueado
-// al comprar sin necesidad de introducir contraseña en el checkout.
-
-add_filter( 'pre_option_woocommerce_enable_guest_checkout',        function() { return 'no'; } );
-add_filter( 'pre_option_woocommerce_registration_generate_username', function() { return 'yes'; } );
-add_filter( 'pre_option_woocommerce_registration_generate_password', function() { return 'yes'; } );
-
 // ─── Hook: capturar contraseña al crear cuenta WooCommerce ───────────────────
 // woocommerce_created_customer recibe la contraseña en texto plano antes de que
 // wp_insert_user la hashee, así podemos incluirla en el email de bienvenida.
@@ -107,15 +99,11 @@ function leyre_activar_por_woocommerce( $order_id ) {
                 'role'         => 'alumno',
             ]);
             if ( is_wp_error( $user_id ) ) return;
+
+            // Vincular pedido al nuevo usuario
+            $order->set_customer_id( $user_id );
+            $order->save();
         }
-
-        // Auto-login: evita que WooCommerce muestre prompt de verificación/acceso
-        wp_set_auth_cookie( $user_id, true );
-        do_action( 'wp_login', get_userdata( $user_id )->user_login, get_userdata( $user_id ) );
-
-        // Vincular pedido al nuevo usuario
-        $order->set_customer_id( $user_id );
-        $order->save();
     }
 
     // Guard: no activar dos veces
