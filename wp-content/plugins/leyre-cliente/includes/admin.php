@@ -349,7 +349,7 @@ add_action( 'admin_init', 'leyre_registrar_settings' );
 
 function leyre_registrar_settings() {
     register_setting( 'leyre_options', 'leyre_duracion_programa',  [ 'type' => 'integer', 'default' => 90 ] );
-    register_setting( 'leyre_options', 'leyre_producto_id',        [ 'type' => 'integer', 'default' => 0 ] );
+    register_setting( 'leyre_options', 'leyre_producto_id',        [ 'type' => 'string',  'default' => '' ] );
     register_setting( 'leyre_options', 'leyre_calendly_api_key',     [ 'type' => 'string',  'default' => '' ] );
     register_setting( 'leyre_options', 'leyre_whatsapp_url',         [ 'type' => 'string',  'default' => '' ] );
     register_setting( 'leyre_options', 'leyre_comunidad_imagen_id',  [ 'type' => 'integer', 'default' => 0 ] );
@@ -358,7 +358,7 @@ function leyre_registrar_settings() {
 function leyre_pagina_configuracion() {
     if ( isset( $_POST['leyre_guardar'] ) && check_admin_referer( 'leyre_save_config' ) ) {
         update_option( 'leyre_duracion_programa',    absint( $_POST['leyre_duracion_programa']    ?? 90 ) );
-        update_option( 'leyre_producto_id',          absint( $_POST['leyre_producto_id']          ?? 0 ) );
+        update_option( 'leyre_producto_id', implode( ',', array_filter( array_map( 'absint', explode( ',', $_POST['leyre_producto_id'] ?? '' ) ) ) ) );
         update_option( 'leyre_calendly_api_key',     sanitize_text_field( $_POST['leyre_calendly_api_key'] ?? '' ) );
         update_option( 'leyre_whatsapp_url',         esc_url_raw( $_POST['leyre_whatsapp_url']    ?? '' ) );
         update_option( 'leyre_comunidad_imagen_id',  absint( $_POST['leyre_comunidad_imagen_id']  ?? 0 ) );
@@ -380,12 +380,12 @@ function leyre_pagina_configuracion() {
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="leyre_producto_id">ID del producto WooCommerce del programa</label></th>
+                    <th><label for="leyre_producto_id">IDs de productos WooCommerce del programa</label></th>
                     <td>
-                        <input type="number" name="leyre_producto_id" id="leyre_producto_id"
-                               value="<?php echo esc_attr( get_option( 'leyre_producto_id', 0 ) ); ?>"
-                               class="regular-text">
-                        <p class="description">El ID del producto que activa el acceso al área privada.</p>
+                        <input type="text" name="leyre_producto_id" id="leyre_producto_id"
+                               value="<?php echo esc_attr( get_option( 'leyre_producto_id', '' ) ); ?>"
+                               class="regular-text" placeholder="Ej: 123,386">
+                        <p class="description">IDs de los productos que activan el acceso. Separados por coma.</p>
                     </td>
                 </tr>
                 <tr>

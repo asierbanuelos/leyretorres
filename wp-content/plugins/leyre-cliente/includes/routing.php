@@ -63,7 +63,8 @@ add_action( 'wp_loaded', function() {
     if ( ! isset( $_GET['leyre_comprar'] ) ) return;
     if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
 
-    $producto_id = (int) get_option( 'leyre_producto_id', 0 );
+    $ids         = array_filter( array_map( 'intval', explode( ',', get_option( 'leyre_producto_id', '' ) ) ) );
+    $producto_id = $ids ? reset( $ids ) : 0;
     if ( ! $producto_id ) return;
 
     WC()->cart->empty_cart();

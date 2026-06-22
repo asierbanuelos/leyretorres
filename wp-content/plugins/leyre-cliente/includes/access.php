@@ -60,15 +60,15 @@ add_action( 'woocommerce_order_status_processing', 'leyre_activar_por_woocommerc
 add_action( 'woocommerce_order_status_completed',  'leyre_activar_por_woocommerce' );
 
 function leyre_activar_por_woocommerce( $order_id ) {
-    $order       = wc_get_order( $order_id );
-    $producto_id = (int) get_option( 'leyre_producto_id', 0 );
+    $order        = wc_get_order( $order_id );
+    $productos_ids = array_filter( array_map( 'intval', explode( ',', get_option( 'leyre_producto_id', '' ) ) ) );
 
-    if ( ! $order || ! $producto_id ) return;
+    if ( ! $order || empty( $productos_ids ) ) return;
 
-    // Verificar que el pedido contiene el producto del programa
+    // Verificar que el pedido contiene alguno de los productos del programa
     $tiene_producto = false;
     foreach ( $order->get_items() as $item ) {
-        if ( (int) $item->get_product_id() === $producto_id ) {
+        if ( in_array( (int) $item->get_product_id(), $productos_ids, true ) ) {
             $tiene_producto = true;
             break;
         }
