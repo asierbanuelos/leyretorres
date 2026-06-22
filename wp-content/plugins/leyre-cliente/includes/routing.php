@@ -59,17 +59,21 @@ add_action( 'login_init', function() {
 } );
 
 // ── /comprar/ — añade el programa al carrito y redirige a checkout ────────────
-add_action( 'template_redirect', function() {
+// Paso 1: convertir ?leyre_comprar=ID al mecanismo nativo de WC (?add-to-cart=ID)
+add_action( 'init', function() {
     if ( ! isset( $_GET['leyre_comprar'] ) ) return;
-    if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
-
     $producto_id = absint( $_GET['leyre_comprar'] );
     if ( ! $producto_id ) return;
-
-    WC()->cart->empty_cart();
-    WC()->cart->add_to_cart( $producto_id );
-    wp_redirect( wc_get_checkout_url() );
+    wp_redirect( add_query_arg( [ 'add-to-cart' => $producto_id, 'leyre_checkout' => '1' ], home_url( '/' ) ) );
     exit;
+} );
+
+// Paso 2: tras añadir al carrito, ir directo a checkout en vez de al carrito
+add_filter( 'woocommerce_add_to_cart_redirect', function( $url ) {
+    if ( isset( $_GET['leyre_checkout'] ) ) {
+        return wc_get_checkout_url();
+    }
+    return $url;
 } );
 
 // Template para /login/
