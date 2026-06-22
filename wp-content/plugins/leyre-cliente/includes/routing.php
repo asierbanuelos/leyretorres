@@ -59,7 +59,7 @@ add_action( 'login_init', function() {
 } );
 
 // ── /comprar/ — añade el programa al carrito y redirige a checkout ────────────
-add_action( 'wp_loaded', function() {
+add_action( 'template_redirect', function() {
     if ( ! isset( $_GET['leyre_comprar'] ) ) return;
     if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
 
