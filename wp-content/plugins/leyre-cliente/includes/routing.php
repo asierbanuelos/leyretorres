@@ -63,15 +63,7 @@ add_action( 'template_redirect', function() {
     if ( ! isset( $_GET['leyre_comprar'] ) ) return;
     if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
 
-    $ids_permitidos = array_filter( array_map( 'intval', explode( ',', get_option( 'leyre_producto_id', '' ) ) ) );
-    $pedido_id      = absint( $_GET['leyre_comprar'] );
-
-    // Si el parámetro es un ID concreto y está en la lista, usarlo; si no, usar el primero
-    if ( $pedido_id && in_array( $pedido_id, $ids_permitidos, true ) ) {
-        $producto_id = $pedido_id;
-    } else {
-        $producto_id = $ids_permitidos ? reset( $ids_permitidos ) : 0;
-    }
+    $producto_id = absint( $_GET['leyre_comprar'] );
     if ( ! $producto_id ) return;
 
     WC()->cart->empty_cart();
