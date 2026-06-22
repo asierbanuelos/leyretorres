@@ -60,7 +60,15 @@ add_action( 'login_init', function() {
 
 // ── /comprar/ — redirige directo a checkout tras añadir al carrito ────────────
 // El link es: ?add-to-cart=ID&leyre_checkout=1
-// WooCommerce añade el producto con su mecanismo nativo; el filtro manda a checkout.
+// Vaciamos el carrito antes (prioridad 15, antes del add_to_cart_action de WC en 20)
+// para que no acumule si se pincha varias veces.
+add_action( 'wp_loaded', function() {
+    if ( ! isset( $_REQUEST['add-to-cart'], $_REQUEST['leyre_checkout'] ) ) return;
+    if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
+    WC()->cart->empty_cart();
+}, 15 );
+
+// Tras añadir, redirigir a checkout en vez de al carrito.
 add_filter( 'woocommerce_add_to_cart_redirect', function( $url ) {
     if ( isset( $_REQUEST['leyre_checkout'] ) ) {
         return wc_get_checkout_url();
