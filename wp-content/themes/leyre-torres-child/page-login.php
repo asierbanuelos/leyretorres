@@ -91,12 +91,14 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
         .ll-brand__body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
         .ll-brand__titulo {
-            font-family: 'Edwardian Script ITC', 'Great Vibes', cursive;
-            font-size: clamp(48px, 6vw, 80px);
-            font-weight: 400;
-            color: var(--c-brand, #C5A882);
-            line-height: 1.1;
             margin-bottom: 28px;
+        }
+
+        .ll-brand__titulo img {
+            max-width: 260px;
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .ll-brand__titulo em {
@@ -296,7 +298,17 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['_leyre_login_nonce'
     <div class="ll-brand__logo">Leyre Torres</div>
 
     <div class="ll-brand__body">
-        <h1 class="ll-brand__titulo">Leonas en Tacones</h1>
+        <div class="ll-brand__titulo">
+            <?php
+            $logo_id  = get_theme_mod( 'custom_logo' );
+            $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
+            if ( $logo_url ) :
+            ?>
+                <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?>">
+            <?php else : ?>
+                <span style="font-family:'Edwardian Script ITC','Great Vibes',cursive;font-size:clamp(48px,6vw,80px);font-weight:400;color:#C5A882;line-height:1.1;display:block;">Leonas en Tacones</span>
+            <?php endif; ?>
+        </div>
         <p class="ll-brand__sub">Tu espacio privado de mentoría, formación y crecimiento personal. Bienvenida de vuelta.</p>
     </div>
 
