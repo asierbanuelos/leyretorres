@@ -40,21 +40,28 @@ add_action( 'init', function() {
     }
 }, 999 );
 
-// Filtrar wp_login_url() para que apunte al login corporativo
+// Filtrar wp_login_url() para que apunte al login corporativo.
+// Si el destino es wp-admin, dejamos wp-login.php intacto para que los admins
+// puedan acceder al panel sin pasar por el login de alumnas.
 add_filter( 'login_url', function( $url, $redirect, $force_reauth ) {
+    if ( $redirect && strpos( $redirect, 'wp-admin' ) !== false ) {
+        return $url;
+    }
     $custom = home_url( '/login/' );
-    // add_query_arg ya urlencodea el valor, así que NO llamamos urlencode() antes
     if ( $redirect ) $custom = add_query_arg( 'redirect_to', $redirect, $custom );
     return $custom;
 }, 10, 3 );
 
-// Redirigir wp-login.php (GET) al login corporativo
+// Redirigir wp-login.php (GET) al login corporativo, salvo si el destino es wp-admin.
 add_action( 'login_init', function() {
     $action = $_REQUEST['action'] ?? 'login';
     if ( ! in_array( $action, [ 'login', '' ], true ) ) return;
     if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) return;
-    $redirect = $_GET['redirect_to'] ?? home_url( '/area-privada/' );
-    wp_redirect( home_url( '/login/?redirect_to=' . urlencode( $redirect ) ) );
+    $redirect = $_GET['redirect_to'] ?? '';
+    if ( $redirect && strpos( $redirect, 'wp-admin' ) !== false ) return;
+    $url = home_url( '/login/' );
+    if ( $redirect ) $url = add_query_arg( 'redirect_to', $redirect, $url );
+    wp_redirect( $url );
     exit;
 } );
 
